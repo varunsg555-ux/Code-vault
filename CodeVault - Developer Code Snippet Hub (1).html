@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeVault | Developer Code Snippet Hub</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Highlight.js for safe, clean Python syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        vault: {
+                            bg: '#0b0f19',
+                            card: '#111827',
+                            code: '#080c14',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar for Code Blocks */
+        .code-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .code-scroll::-webkit-scrollbar-track {
+            background: #080c14;
+        }
+        .code-scroll::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        .code-scroll::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        /* Seamless highlight.js integration */
+        .hljs {
+            background: transparent !important;
+            padding: 0 !important;
+        }
+    </style>
+</head>
+<body class="bg-vault-bg text-slate-200 font-sans antialiased min-h-screen flex flex-col selection:bg-indigo-500/30 selection:text-indigo-200">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Top Navigation & Header -->
+    <header class="sticky top-0 z-30 bg-[#0b0f19]/90 backdrop-blur-md border-b border-slate-800/80">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <!-- Brand / Logo -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                            <i data-lucide="terminal" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                                CodeVault
+                                <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Python Hub</span>
+                            </h1>
+                            <p class="text-xs text-slate-400">Data Visualization, ML, Deep Learning &amp; NLP snippets</p>
+                        </div>
+                    </div>
+                    <!-- Mobile Add Button -->
+                    <button onclick="openAddModal()" class="sm:hidden inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-3.5 py-2 rounded-xl transition shadow-lg shadow-indigo-600/20">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Add</span>
+                    </button>
+                </div>
+
+                <!-- Action Buttons (Desktop) -->
+                <div class="hidden sm:flex items-center gap-2.5">
+                    <button onclick="openManageModal()" class="inline-flex items-center gap-2 bg-vault-card hover:bg-slate-800 text-slate-300 border border-slate-700/80 text-sm font-medium px-3.5 py-2 rounded-xl transition" title="Export JSON or Reset Snippets">
+                        <i data-lucide="database" class="w-4 h-4 text-cyan-400"></i>
+                        <span>Export / Reset</span>
+                    </button>
+                    <button onclick="openAddModal()" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-4 py-2 rounded-xl transition shadow-lg shadow-indigo-600/25">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Add Snippet</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Bar & Category Filter Pills -->
+            <div class="mt-4 flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
+                <!-- Search Input -->
+                <div class="relative flex-1 max-w-md">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    <input type="text" id="search-input" placeholder="Search title, category, description, or code..." 
+                        class="w-full bg-vault-card border border-slate-800 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 rounded-xl pl-10 pr-9 py-2 text-sm text-slate-200 placeholder-slate-500 outline-none transition">
+                    <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+                <!-- Category Filter Pills & Mobile JSON -->
+                <div class="flex items-center justify-between gap-2 overflow-x-auto pb-1 lg:pb-0">
+                    <div id="filter-pills" class="flex items-center gap-1.5 flex-nowrap">
+                        <button data-category="All" class="filter-pill active shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition bg-indigo-600 text-white shadow-sm">All</button>
+                        <button data-category="Data Visualization" class="filter-pill shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition bg-vault-card text-slate-400 hover:text-slate-200 border border-slate-800">Data Visualization</button>
+                        <button data-category="Data Preprocessing" class="filter-pill shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition bg-vault-card text-slate-400 hover:text-slate-200 border border-slate-800">Data Preprocessing</button>
+                        <button data-category="Machine Learning" class="filter-pill shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition bg-vault-card text-slate-400 hover:text-slate-200 border border-slate-800">Machine Learning</button>
+                        <button data-category="Deep Learning" class="filter-pill shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition bg-vault-card text-slate-400 hover:text-slate-200 border border-slate-800">Deep Learning</button>
+                        <button data-category="NLP" class="filter-pill shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition bg-vault-card text-slate-400 hover:text-slate-200 border border-slate-800">NLP</button>
+                    </div>
+                    <button onclick="openManageModal()" class="sm:hidden shrink-0 inline-flex items-center gap-1.5 bg-vault-card border border-slate-800 text-slate-300 text-xs font-medium px-3 py-1.5 rounded-xl">
+                        <i data-lucide="database" class="w-3.5 h-3.5 text-cyan-400"></i>
+                        <span>JSON</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
+        <!-- Status Bar -->
+        <div class="flex items-center justify-between mb-6 text-xs text-slate-400">
+            <span id="snippet-count">Showing 19 snippets</span>
+            <span class="hidden sm:inline">Tip: Click <strong class="text-slate-300 font-medium">Copy Code</strong> to grab the exact Python script</span>
+        </div>
+
+        <!-- Snippets Container -->
+        <div id="snippets-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <!-- Snippet Cards injected dynamically via JS -->
+        </div>
+
+        <!-- Empty Search State -->
+        <div id="empty-state" class="hidden text-center py-16 px-4 bg-vault-card/60 border border-slate-800/80 rounded-2xl">
+            <div class="w-12 h-12 rounded-2xl bg-slate-800/80 flex items-center justify-center mx-auto mb-3 text-slate-400">
+                <i data-lucide="code-2" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-base font-semibold text-white">No snippets found</h3>
+            <p class="text-sm text-slate-400 mt-1 max-w-md mx-auto">No code snippets match your current search or category filter. Try clearing your filter or add a new snippet.</p>
+            <button onclick="resetFilters()" class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-medium text-white transition">
+                Clear Filters
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-vault-bg py-6 mt-12">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <p>CodeVault &bull; Built with HTML, Tailwind CSS &amp; Vanilla JS</p>
+            <div class="flex items-center gap-4">
+                <button onclick="openManageModal()" class="hover:text-slate-300 transition">Export JSON / Reset</button>
+                <span>&bull;</span>
+                <span>19 Built-in Python Programs</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ADD SNIPPET MODAL -->
+    <div id="add-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-vault-card border border-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                        <i data-lucide="file-code-2" class="w-4 h-4"></i>
+                    </div>
+                    <h2 class="text-lg font-semibold text-white">Add New Code Snippet</h2>
+                </div>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="add-snippet-form" class="p-6 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-medium text-slate-300 mb-1.5">Snippet Title *</label>
+                        <input type="text" id="input-title" required placeholder="e.g., Decision Tree Classifier" 
+                            class="w-full bg-vault-bg border border-slate-800 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1.5">Category / Tag *</label>
+                        <input type="text" id="input-category" list="category-suggestions" required value="Machine Learning" placeholder="e.g., Machine Learning"
+                            class="w-full bg-vault-bg border border-slate-800 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition">
+                        <datalist id="category-suggestions">
+                            <option value="Data Visualization">
+                            <option value="Data Preprocessing">
+                            <option value="Machine Learning">
+                            <option value="Deep Learning">
+                            <option value="NLP">
+                            <option value="Python">
+                        </datalist>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Short Description *</label>
+                    <input type="text" id="input-desc" required placeholder="Briefly explain what this script does..." 
+                        class="w-full bg-vault-bg border border-slate-800 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition">
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-medium text-slate-300">Python Code *</label>
+                        <span class="text-[11px] text-slate-500">Tab key inserts 4 spaces</span>
+                    </div>
+                    <textarea id="input-code" required rows="9" placeholder="Paste your program code here..." 
+                        class="w-full bg-vault-bg border border-slate-800 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 rounded-xl p-3.5 font-mono text-xs sm:text-sm text-slate-200 placeholder-slate-600 outline-none transition leading-relaxed"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-800/80">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20 transition">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        <span>Save Snippet</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EXPORT / RESET DATA MODAL -->
+    <div id="manage-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-vault-card border border-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                        <i data-lucide="database" class="w-4 h-4"></i>
+                    </div>
+                    <h2 class="text-lg font-semibold text-white">Export JSON &amp; Data Management</h2>
+                </div>
+                <button onclick="closeManageModal()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-5">
+                <div class="bg-vault-bg/90 border border-slate-800 rounded-xl p-4 text-xs text-slate-400 leading-relaxed">
+                    <strong class="text-slate-200 block mb-1">Deploying to GitHub Pages?</strong>
+                    Snippets you add via the UI are stored in your browser's <code class="text-cyan-400">localStorage</code>. To permanently include new snippets for everyone visiting your live site, copy the JSON array below and paste it into <code class="text-cyan-400">DEFAULT_SNIPPETS</code> inside <code class="text-cyan-400">index.html</code>.
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="text-xs font-medium text-slate-300">Current Snippets JSON</label>
+                        <div class="flex items-center gap-2">
+                            <button onclick="downloadJsonFile()" class="inline-flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg transition">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                <span>Download .json</span>
+                            </button>
+                            <button onclick="copyJsonExport()" class="inline-flex items-center gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg transition">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy JSON</span>
+                            </button>
+                        </div>
+                    </div>
+                    <textarea id="export-json-area" readonly rows="8" class="w-full bg-vault-bg border border-slate-800 rounded-xl p-3.5 font-mono text-xs text-slate-300 outline-none"></textarea>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-slate-800">
+                    <div>
+                        <p class="text-xs font-medium text-rose-400">Reset to Default 19 Snippets</p>
+                        <p class="text-[11px] text-slate-500">Restores all 19 built-in Python scripts and clears custom browser changes.</p>
+                    </div>
+                    <button id="reset-confirm-btn" onclick="handleResetDefaults()" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                        <span id="reset-btn-text">Reset Defaults</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden textarea fallback for safe clipboard copy inside iframes -->
+    <textarea id="clipboard-helper" class="fixed -top-96 left-0 opacity-0 pointer-events-none" aria-hidden="true"></textarea>
+
+    <script>
+        /**
+         * DEFAULT_SNIPPETS
+         * All 19 Python Data Visualization, Data Preprocessing, Machine Learning, Deep Learning, and NLP snippets.
+         * Exact whitespace, quotes, and newlines are preserved verbatim.
+         */
+        const DEFAULT_SNIPPETS = [
+            {
+                id: 'snip-1',
+                title: 'Data Visualization Setup & Dataset Load',
+                category: 'Data Visualization',
+                description: 'Import Matplotlib and Pandas and load the Titanic CSV dataset.',
+                code: "import matplotlib.pyplot as plt \nimport pandas as pd  \ndf=pd.read_csv('C:/Users/user/Downloads/kaggle/titanic (1).csv')  \ndf"
+            },
+            {
+                id: 'snip-2',
+                title: 'Count of Sex (Bar Chart)',
+                category: 'Data Visualization',
+                description: 'Plot a bar chart showing how many males and females were on board.',
+                code: "a= df['sex'].value_counts().sort_index() \nplt.bar(a.index, a.values)  \nplt.xlabel('Sex') \nplt.ylabel('Number of Passengers') \nplt.title('count of sex')  \nplt.show()"
+            },
+            {
+                id: 'snip-3',
+                title: 'Age vs Survival Status (Bar Chart)',
+                category: 'Data Visualization',
+                description: 'Plot a bar chart comparing passenger age with respect to survival status (alive).',
+                code: "plt.bar(df['alive'],df['age'])  \nplt.title(\"alive and not alive passengers\") \nplt.xlabel(\"alive\") \nplt.ylabel(\"passengers age\")  \nplt.show()"
+            },
+            {
+                id: 'snip-4',
+                title: 'Distribution of Passenger Ages (Histogram)',
+                category: 'Data Visualization',
+                description: 'Plot a histogram dividing passenger ages into 10 equal bins.',
+                code: "plt.hist(df['age'],bins=10) \nplt.title(\"distrubution of age\") \nplt.xlabel(\"group of age\") \nplt.ylabel(\"passengers\")  \nplt.show()"
+            },
+            {
+                id: 'snip-5',
+                title: 'Passengers in Each Class (Line Graph)',
+                category: 'Data Visualization',
+                description: 'Plot a line graph visualizing the number of passengers in each class.',
+                code: "a=df['class'].value_counts()  \nplt.title(\"count of class\")  \nplt.xlabel(\"class\")  \nplt.ylabel(\"passengers\")  \na.plot(kind='line')"
+            },
+            {
+                id: 'snip-6',
+                title: 'Deck and Survived (Line Graph with Markers)',
+                category: 'Data Visualization',
+                description: 'Plot a multi-line graph with circular markers comparing deck and survival count.',
+                code: "a=df[['deck','survived']].value_counts().unstack()  \na.plot(kind='line',marker='o') \nplt.title(\"deck and survived\") \nplt.xlabel(\"deck\")  \nplt.ylabel(\"passengers\")  \nplt.show()"
+            },
+            {
+                id: 'snip-7',
+                title: 'Age vs Fare (Scatter Plot)',
+                category: 'Data Visualization',
+                description: 'Plot a scatter plot comparing passenger age against ticket fare.',
+                code: "plt.scatter(df['age'],df['fare'])  \n \n \nplt.title(\"distrubution of age vs fare\")  \n \nplt.xlabel(\"group of age\")  \n \nplt.ylabel(\"fare\") \nplt.show()"
+            },
+            {
+                id: 'snip-8',
+                title: 'Passenger Class Distribution (Pie Chart)',
+                category: 'Data Visualization',
+                description: 'Plot a pie chart showing the percentage distribution across passenger classes.',
+                code: "plt.pie(df['class'].value_counts(),labels=[1,2,3],autopct='%1.2f%%')  \n \nplt.show()"
+            },
+            {
+                id: 'snip-9',
+                title: 'Distribution of Ticket Fares (Box Plot)',
+                category: 'Data Visualization',
+                description: 'Draw a box plot visualizing the spread and outliers of ticket fares.',
+                code: "plt.boxplot(df['fare'])  \nplt.title(\"distribution of fare\")  \nplt.ylabel(\"fare\") \nplt.show()"
+            },
+            {
+                id: 'snip-10',
+                title: 'K-Means Clustering (Mall Customers)',
+                category: 'Machine Learning',
+                description: 'Customer segmentation using the Elbow Method and K-Means clustering on Annual Income and Spending Score.',
+                code: "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nfrom sklearn.cluster import KMeans\nimport warnings\nwarnings.filterwarnings('ignore')\n\ndata = pd.read_csv('Mall_Customers.csv')\ndata.head()\n\nx = data.iloc[:, 3:5].values\nwcss = []\n\nfor i in range(1, 11):\n\tkmeans = KMeans(n_clusters = i)\n\tkmeans.fit(x)\n\twcss.append(kmeans.inertia_)\n\nplt.plot(range(1, 11), wcss)\nplt.title('The Elbow Method')\nplt.xlabel('No. of Clusters')\nplt.ylabel('wcss')\nplt.show()\n\nkm1 = KMeans(n_clusters = 5, init = 'k-means++', max_iter = 300, n_init = 10, random_state = 0)\ny_means = km1.fit_predict(x)\nplt.scatter(x[y_means == 0, 0], x[y_means == 0, 1], s = 100, c = 'pink', label = 'C1:Kanjoos')\nplt.scatter(x[y_means == 1, 0], x[y_means == 1, 1], s = 100, c = 'yellow', label = 'C2:Average')\nplt.scatter(x[y_means == 2, 0], x[y_means == 2, 1], s = 100, c = 'cyan', label = 'C3:Bakra/Target')\nplt.scatter(x[y_means == 3, 0], x[y_means == 3, 1], s = 100, c = 'magenta', label = 'C4:Pokiri')\nplt.scatter(x[y_means == 4, 0], x[y_means == 4, 1], s = 100, c = 'orange', label = 'C5:Intelligent')\nplt.scatter(km1.cluster_centers_[:,0], km1.cluster_centers_[:, 1], s = 50, c = 'blue' , label = 'centroid')\nplt.title('K Means Clustering')\nplt.xlabel('Annual Income')\nplt.ylabel('Spending Score')\nplt.legend()"
+            },
+            {
+                id: 'snip-11',
+                title: 'Keras Neural Network (MNIST Digit Classification)',
+                category: 'Deep Learning',
+                description: 'Build, train, and evaluate a sequential dense neural network on the MNIST handwritten digits dataset.',
+                code: "import tensorflow as tf\nfrom tensorflow.keras.models import Sequential\nfrom tensorflow.keras.layers import Flatten, Dense\n\n(x_train, y_train), (x_test, y_test) =tf.keras.datasets.mnist.load_data()\nx_train = x_train / 255.0\nx_test = x_test / 255.0\n\nmodel = Sequential([\n    Flatten(input_shape=(28, 28)),\n    Dense(128, activation='relu'),\n    Dense(64, activation='relu'),\n    Dense(10, activation='softmax')\n])\n\nmodel.compile(\n    optimizer='adam',\n    loss='sparse_categorical_crossentropy',\n    metrics=['accuracy']\n)\n\nhistory = model.fit(x_train, y_train, epochs=10)\n\ntest_loss, test_accuracy = model.evaluate(\n    x_test, y_test)\n\nprint(\"Test Accuracy:\", test_accuracy)\n\npredictions = model.predict(x_test)\n\nimport numpy as np\n\npredicted_class = np.argmax(predictions[0])\nprint(\"Predicted digit:\", predicted_class)\nprint(\"Actual digit:\", y_test[0])"
+            },
+            {
+                id: 'snip-12',
+                title: 'NLP Text Processing & Vectorization (NLTK & Scikit-Learn)',
+                category: 'NLP',
+                description: 'Tokenization, stopword removal, POS tagging, Named Entity Recognition, N-grams, Bag of Words, and TF-IDF.',
+                code: "import nltk\nfrom nltk.tokenize import word_tokenize\nfrom nltk.corpus import stopwords, wordnet\nfrom nltk.stem import WordNetLemmatizer\nfrom nltk import pos_tag, ne_chunk\nfrom nltk.util import ngrams\nfrom sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer\n\n\nnltk.download('punkt')\nnltk.download('stopwords')\nnltk.download('averaged_perceptron_tagger')\nnltk.download('maxent_ne_chunker')\nnltk.download('words')\nnltk.download('wordnet')\nnltk.download('omw-1.4')\nnltk.download('punkt_tab')\nnltk.download('averaged_perceptron_tagger_eng')\nnltk.download('maxent_ne_chunker_tab')\nnltk.download('wordnet_ic')\n\ntext = \"Apple is looking at buying U.K. startup for $1 billion. The striped bats were hanging on their feet.\"\ntokens = word_tokenize(text)\nprint(\"Tokens:\")\nprint(tokens)\nprint(\"\\n--------------------\\n\")\n\nstop_words = set(stopwords.words('english'))\nfiltered_tokens = [word for word in tokens if word.lower() not in stop_words]\nprint(\"After Stopword Removal:\")\nprint(filtered_tokens)\nprint(\"\\n--------------------\\n\")\n\npos_tags = pos_tag(filtered_tokens)\nprint(\"POS Tags:\")\nprint(pos_tags)\nprint(\"\\n--------------------\\n\")\n\n\nner_tree = ne_chunk(pos_tags)\nprint(\"Named Entities (Tree Format):\")\nprint(ner_tree)\nprint(\"\\n--------------------\\n\")\n\nbi_grams = list(ngrams(filtered_tokens, 2))\ntri_grams = list(ngrams(filtered_tokens, 3))\nprint(\"Bigrams:\")\nprint(bi_grams)\nprint(\"\\nTrigrams:\")\nprint(tri_grams)\n\ncorpus = [\n    \"Apple is looking at buying U.K. startup for $1 billion.\",\n    \"The striped bats were hanging on their feet.\"\n]\nvectorizer = CountVectorizer(stop_words='english')\nbow_matrix = vectorizer.fit_transform(corpus)\n\nprint(\"Bag of Words Feature Names:\")\nprint(vectorizer.get_feature_names_out())\nprint(\"\\nBag of Words Matrix:\")\nprint(bow_matrix.toarray())\nprint(\"\\n--------------------\\n\")\n\ntfidf_vectorizer = TfidfVectorizer(stop_words='english')\ntfidf_matrix = tfidf_vectorizer.fit_transform(corpus)\n\nprint(\"TF-IDF Feature Names:\")\nprint(tfidf_vectorizer.get_feature_names_out())\nprint(\"\\nTF-IDF Matrix:\")\nprint(tfidf_matrix.toarray())"
+            },
+            {
+                id: 'snip-13',
+                title: 'Support Vector Machine (SVM Classifier)',
+                category: 'Machine Learning',
+                description: 'Classify apples and oranges using SVC, plot scatter visualization, and compute confusion matrix accuracy.',
+                code: "#A program to demonstrate the usage of SVM\nimport seaborn as sns\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.svm import SVC\nfrom sklearn.metrics import confusion_matrix\n\ndata = pd.read_csv('apples_and_oranges.csv')\ny = data['Class']\nX = data.drop('Class', axis=1)\n\nsns.scatterplot(x='Weight', y='Size', hue='Class', data=data)\nplt.show()\n\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=10)\n\nclassifier = SVC()\nclassifier.fit(X_train, y_train)\ny_pred = classifier.predict(X_test)\nprint(y_pred)\ncm = confusion_matrix(y_test, y_pred)\nprint(cm)\naccuracy = float(cm.diagonal().sum()) / len(y_test)\nprint('model accuracy is:', accuracy * 100, '%')\nX_test1 = [[73,6]]  # for new data testing\ny_pred1 = classifier.predict(X_test1)\nprint('predicted class is:', y_pred1[0])"
+            },
+            {
+                id: 'snip-14',
+                title: 'Logistic Regression (Fish Species Classification)',
+                category: 'Machine Learning',
+                description: 'Standardize features and train a Logistic Regression classifier with a Seaborn confusion matrix heatmap.',
+                code: "import matplotlib.pyplot as plt\nimport pandas as pd\nimport seaborn as sns\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import confusion_matrix, accuracy_score\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.preprocessing import StandardScaler\n\ndf = pd.read_csv('dataset_Fish.csv')\nprint(df.head())\ny = df['Species']\nX = df.drop('Species', axis=1)\n\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)\n\nscaler = StandardScaler()\nX_train_scaled = scaler.fit_transform(X_train)\nX_test_scaled = scaler.transform(X_test)\n\nmodel = LogisticRegression()\nmodel.fit(X_train_scaled, y_train)\ny_pred = model.predict(X_test_scaled)\nprint('Accuracy:', accuracy_score(y_test, y_pred))\n\ncm = confusion_matrix(y_test, y_pred)\nplt.figure()\nsns.heatmap(cm,annot=True)\nplt.xlabel('Predicted Species')\nplt.ylabel('Actual Species')\nplt.title('Confusion Matrix Heatmap - Fish Classification')\nplt.show()"
+            },
+            {
+                id: 'snip-15',
+                title: 'Decision Tree and Random Forest Classification Using Breast Cancer Dataset',
+                category: 'Machine Learning',
+                description: 'Train and compare Decision Tree and Random Forest classifiers on the Breast Cancer dataset with confusion matrices and classification reports.',
+                code: "# Import Libraries\nimport pandas as pd\nimport matplotlib.pyplot as plt\nimport warnings\nwarnings.filterwarnings(\"ignore\")\n\nfrom sklearn.datasets import load_breast_cancer\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import (\n    accuracy_score,\n    ConfusionMatrixDisplay,\n    classification_report\n)\n\n# Load Breast Cancer Dataset\ncancer_data = load_breast_cancer()\n\nprint(type(cancer_data))\nprint(list(cancer_data.target_names))\n\n# Convert Data into DataFrame\ndf = pd.DataFrame(\n    cancer_data.data,\n    columns=cancer_data.feature_names\n)\n\n# Train-Test Split\nX_train, X_test, y_train, y_test = train_test_split(\n    df,\n    cancer_data.target,\n    random_state=42,\n    test_size=0.33\n)\n\n# -------------------------------\n# Decision Tree Classifier\n# -------------------------------\n\ndtc = DecisionTreeClassifier()\ndtc.fit(X_train, y_train)\n\n# Test the Model\ny_pred = dtc.predict(X_test)\n\nprint(\"\\nDecision Tree Classification\")\nprint(\"Accuracy:\", accuracy_score(y_test, y_pred))\n\n# Plot Confusion Matrix\nConfusionMatrixDisplay.from_estimator(\n    dtc, X_test, y_test\n)\nplt.title(\"Decision Tree Confusion Matrix\")\nplt.show()\n\n# Classification Report\nprint(classification_report(y_test, y_pred))\n\n# -------------------------------\n# Random Forest Classifier\n# -------------------------------\n\nrfc = RandomForestClassifier(\n    n_estimators=100,\n    random_state=42\n)\n\nrfc.fit(X_train, y_train)\n\n# Test the Model\ny_pred = rfc.predict(X_test)\n\nprint(\"\\nRandom Forest Classification\")\nprint(\"Accuracy:\", accuracy_score(y_test, y_pred))\n\n# Plot Confusion Matrix\nConfusionMatrixDisplay.from_estimator(\n    rfc, X_test, y_test\n)\nplt.title(\"Random Forest Confusion Matrix\")\nplt.show()\n\n# Classification Report\nprint(classification_report(y_test, y_pred))"
+            },
+            {
+                id: 'snip-16',
+                title: 'Linear Regression / Iris Dataset Exploration & Preprocessing',
+                category: 'Data Preprocessing',
+                description: 'Explore the Iris dataset, map target labels, standardize features with StandardScaler, and split into train/test sets.',
+                code: "# Import Libraries\nimport pandas as pd\nfrom sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.preprocessing import StandardScaler\n\n# Load Iris Dataset and Convert into DataFrame\niris = load_iris()\n\ndf = pd.DataFrame(\n    iris.data,\n    columns=iris.feature_names\n)\n\n# Add Target Column\ndf['species'] = iris.target\n\nprint(\"Target Values:\", iris.target_names)\nprint(df.head())\n\n# Data Exploration\nprint(\"\\nDataset Information:\")\nprint(df.info())\n\nprint(\"\\nDataset Shape:\")\nprint(df.shape)\n\nprint(\"\\nColumn Names:\")\nprint(df.columns)\n\nprint(\"\\nMissing Values:\")\nprint(df.isnull().sum())\n\nprint(\"\\nNumber of Flowers in Each Species:\")\nprint(df['species'].value_counts())\n\n# Convert Target Numbers into Species Names\ndf['species_name'] = df['species'].map({\n    0: 'Setosa',\n    1: 'Versicolor',\n    2: 'Virginica'\n})\n\nprint(\"\\nData with Species Names:\")\nprint(df.head())\n\n# Preprocessing\nX = df[iris.feature_names]\ny = df['species']\n\n# Standardization\nscaler = StandardScaler()\nX_scaled = scaler.fit_transform(X)\n\nprint(\"\\nScaled Features:\")\nprint(X_scaled[:5])\n\n# Train-Test Split\nX_train, X_test, y_train, y_test = train_test_split(\n    X_scaled,\n    y,\n    test_size=0.2,\n    random_state=42\n)\n\n# Display Training and Testing Data Shapes\nprint(\"\\nTraining Data Shape:\", X_train.shape)\nprint(\"\\nTraining Target Shape:\", y_train.shape)\n\nprint(\"\\nTesting Data Shape:\", X_test.shape)\nprint(\"\\nTesting Target Shape:\", y_test.shape)"
+            },
+            {
+                id: 'snip-17',
+                title: 'Linear Regression on Advertising Dataset',
+                category: 'Machine Learning',
+                description: 'Standardize Advertising features, fit a Linear Regression model, evaluate R2 and MSE, and plot actual vs predicted sales.',
+                code: "# 1. Import Libraries\nimport matplotlib.pyplot as plt\nimport pandas as pd\nimport numpy as np\n\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.metrics import mean_squared_error, r2_score\n\n\n# 2. Load Dataset\ndf = pd.read_csv(\"Advertising.csv\")\nprint(df.head())\n\n\n# 3. Drop Rows with Null Values\ndf.dropna(inplace=True, axis=0)\n\n\n# 4. Separate Target Variable\ny = df['Sales']\n\n\n# 5. Separate Input Variables\nX = df.drop('Sales', axis=1)\n\n\n# 6. Split Data into Training and Testing Sets\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y,\n    test_size=0.3,\n    random_state=42\n)\n\nprint(\"Training Data:\")\nprint(X_train.head())\n\n\n# 7. Standardize the Values\nscaler = StandardScaler()\n\n\n# 8. Fit Scaler on Training Data\nscaler.fit(X_train)\n\n\n# 9. Transform Training and Testing Data\nX_train = scaler.transform(X_train)\nX_test = scaler.transform(X_test)\n\n\n# 10. Create Linear Regression Model\nmodel = LinearRegression()\n\n\n# 11. Train the Model\nmodel.fit(X_train, y_train)\n\n\n# 12. Predict Values Using Testing Data\ny_pred = model.predict(X_test)\n\n\n# 13. Create DataFrame for Actual vs Predicted Values\ny_df = pd.DataFrame({\n    'y_test': y_test,\n    'y_pred': y_pred\n})\n\nprint(y_df)\n\n\n# 14. Calculate R2 Score\nprint(\"R2 Score:\", r2_score(y_test, y_pred))\n\n\n# 15. Calculate Mean Squared Error\nprint(\"MSE:\", mean_squared_error(y_test, y_pred))\n\n\n# 16. Plot Actual vs Predicted Values\nplt.scatter(y_test, y_pred)\nplt.xlabel(\"Actual Values\")\nplt.ylabel(\"Predicted Values\")\nplt.title(\"Actual vs Predicted Values\")\nplt.show()\n\n\n# 17. Display Model Coefficients\nprint(\"Coefficients:\", model.coef_)\n\n\n# 18. Display Model Intercept\nprint(\"Intercept:\", model.intercept_)"
+            },
+            {
+                id: 'snip-18',
+                title: 'Missing Values Imputation',
+                category: 'Data Preprocessing',
+                description: 'Visualize missing values with missingno and apply dropna, arbitrary value, mean, mode, median, forward fill, and backward fill.',
+                code: "# 1. Import Libraries\nimport pandas as pd\nimport numpy as np\nimport missingno as msno\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n\n# 2. Load Dataset and Display Information\ndf = sns.load_dataset(\"titanic\")\n\nprint(\"Dataset Information:\")\ndf.info()\n\n# 3. Count Missing Values\nprint(\"\\nMissing Values Count:\")\nprint(df.isnull().sum())\n\n# 4. Visualize Missing Values Using Bar Plot\nmsno.bar(df)\nplt.title(\"Bar Plot of Missing Values\")\nplt.show()\n\n# 5. Visualize Missing Values Using Matrix Plot\nmsno.matrix(df)\nplt.title(\"Matrix Plot of Missing Values\")\nplt.show()\n\n# 6. Delete Rows with Missing Values\nprint(\"\\nDeleting Rows with Missing Values:\")\nnew_df = df.dropna(axis=0)\n\nprint(new_df.isnull().sum())\nprint(\"Dataset Information:\")\nnew_df.info()\n\n# 7. Delete the 'deck' Column\nprint(\"\\nColumns in Dataset:\")\nprint(df.columns)\n\ncol = df.drop(\"deck\", axis=1)\n\nprint(\"\\nDataset After Deleting Column:\")\nprint(col)\n\n# 8. Replace Missing Values with Arbitrary Value\ndf[\"deck\"] = df[\"deck\"].fillna(\"C\")\n\nprint(\"\\nMissing Values After Replacing:\")\nprint(df[\"deck\"].isnull().sum())\n\n# 9. Replace Missing Values with Mean\nmean = df[\"age\"].mean()\n\nprint(\"Mean:\", mean)\n\ndf[\"age\"] = df[\"age\"].fillna(mean)\n\nprint(\"\\nAge Column After Mean Imputation:\")\nprint(df[\"age\"])\n\n# 10. Replace Missing Values with Mode\nmode = df[\"deck\"].mode()[0]\n\nprint(\"Mode:\", mode)\n\ndf[\"deck\"] = df[\"deck\"].fillna(mode)\n\nprint(\"\\nDeck Column After Mode Imputation:\")\nprint(df[\"deck\"])\n\n# 11. Replace Missing Values with Median\nmedian = df[\"age\"].median()\n\nprint(\"Median:\", median)\n\ndf[\"age\"] = df[\"age\"].fillna(median)\n\nprint(\"\\nAge Column After Median Imputation:\")\nprint(df[\"age\"])\n\n# 12. Forward Fill\nprint(\"\\nForward Fill:\")\nnew_df = df.ffill()\n\nprint(new_df)\n\n# 13. Backward Fill\nprint(\"\\nBackward Fill:\")\nnew_df = df.bfill()\n\nprint(new_df)"
+            },
+            {
+                id: 'snip-19',
+                title: 'Outlier Detection and Handling',
+                category: 'Data Preprocessing',
+                description: 'Detect outliers via plots and IQR bounds, then remove, winsorize (percentile cap), or impute with mean and median.',
+                code: "# Import Libraries\nimport numpy as np\nimport pandas as pd\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n\n# Load Dataset\ntdf = sns.load_dataset(\"titanic\")\nprint(tdf)\n\n# Scatter Plot to Detect Outliers\nfig, ax = plt.subplots(figsize=(10, 4))\nax.scatter(tdf[\"age\"], tdf[\"fare\"])\nax.set_xlabel(\"Age\")\nax.set_ylabel(\"Fare\")\nplt.title(\"Scatter Plot\")\nplt.show()\n\n# Box Plot to Detect Outliers\ntdf[\"age\"].plot(kind=\"box\")\nplt.title(\"Box Plot of Age\")\nplt.show()\n\n# Histogram\ntdf[\"fare\"].plot(kind=\"hist\", bins=20)\nplt.title(\"Histogram of Fare\")\nplt.show()\n\n# Finding Outliers and IQR\nq1 = tdf[\"age\"].quantile(0.25)\nq3 = tdf[\"age\"].quantile(0.75)\n\niqr = q3 - q1\n\nprint(\"Q1:\", q1)\nprint(\"Q3:\", q3)\nprint(\"IQR:\", iqr)\n\n# Finding Upper and Lower Whiskers\nub = q3 + 1.5 * iqr\nlb = q1 - 1.5 * iqr\n\nprint(\"Upper Bound:\", ub)\nprint(\"Lower Bound:\", lb)\n\n# Finding Outliers\nagearr = tdf[\"age\"]\noutliers = agearr[(agearr < lb) | (agearr > ub)]\n\nprint(\"Outliers in Age:\")\nprint(outliers)\n\n# Removing Outliers\nt_remove = tdf.copy()\n\nui = t_remove[t_remove[\"age\"] > ub].index\nli = t_remove[t_remove[\"age\"] < lb].index\n\nt_remove.drop(ui, inplace=True)\nt_remove.drop(li, inplace=True)\n\nprint(\"Dataset After Removing Outliers\")\nprint(t_remove.info())\n\n# Replacing Outliers with Upper and Lower Caps\nt_cap = tdf.copy()\n\nfarearr = t_cap[\"fare\"].dropna()\n\nuc = np.percentile(farearr, 99)\nlc = np.percentile(farearr, 1)\n\nprint(\"Upper Cap:\", uc)\nprint(\"Lower Cap:\", lc)\n\nt_cap[\"fare\"] = t_cap[\"fare\"].clip(lower=lc, upper=uc)\n\nprint(\"Dataset After Winsorization\")\nprint(t_cap)\n\n# Replacing Outliers with Mean\nt_mean = tdf.copy()\n\nmeanage = t_mean[\"age\"].mean()\n\nt_mean[\"age\"] = np.where(\n    (t_mean[\"age\"] < lb) | (t_mean[\"age\"] > ub),\n    meanage,\n    t_mean[\"age\"]\n)\n\nprint(\"Dataset After Replacing Outliers with Mean\")\nprint(t_mean[\"age\"])\n\n# Replacing Outliers with Median\nt_median = tdf.copy()\n\nmedianage = t_median[\"age\"].median()\n\nt_median[\"age\"] = np.where(\n    (t_median[\"age\"] < lb) | (t_median[\"age\"] > ub),\n    medianage,\n    t_median[\"age\"]\n)\n\nprint(\"Dataset After Replacing Outliers with Median\")\nprint(t_median[\"age\"])"
+            }
+        ];
+
+        const STORAGE_KEY = 'codevault_snippets_v4';
+        let snippets = [];
+        let activeCategory = 'All';
+        let searchQuery = '';
+        let expandedCards = new Set();
+        let resetArmed = false;
+
+        // Category Badge Styling
+        const CATEGORY_META = {
+            'Data Visualization': {
+                badgeClass: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
+                dotClass: 'bg-sky-400'
+            },
+            'Data Preprocessing': {
+                badgeClass: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                dotClass: 'bg-amber-400'
+            },
+            'Machine Learning': {
+                badgeClass: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+                dotClass: 'bg-indigo-400'
+            },
+            'Deep Learning': {
+                badgeClass: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+                dotClass: 'bg-purple-400'
+            },
+            'NLP': {
+                badgeClass: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                dotClass: 'bg-cyan-400'
+            }
+        };
+
+        const DEFAULT_BADGE = {
+            badgeClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+            dotClass: 'bg-emerald-400'
+        };
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSnippets();
+            renderFilterPills();
+            setupEventListeners();
+            renderSnippets();
+            lucide.createIcons();
+        });
+
+        // Load from localStorage or initialize with all 14 DEFAULT_SNIPPETS
+        function loadSnippets() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        snippets = parsed;
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not read from localStorage:', e);
+            }
+            snippets = [...DEFAULT_SNIPPETS];
+            saveSnippets();
+        }
+
+        function saveSnippets() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(snippets));
+            } catch (e) {
+                console.warn('Could not save to localStorage:', e);
+            }
+        }
+
+        // Escape HTML safely before rendering
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Render Category Filter Pills (includes base categories + any custom added categories)
+        function renderFilterPills() {
+            const container = document.getElementById('filter-pills');
+            const baseCategories = ['All', 'Data Visualization', 'Data Preprocessing', 'Machine Learning', 'Deep Learning', 'NLP'];
+            const extraCategories = [...new Set(snippets.map(s => s.category).filter(c => c && !baseCategories.includes(c)))];
+            const allCategories = [...baseCategories, ...extraCategories];
+
+            container.innerHTML = allCategories.map(cat => {
+                const isActive = activeCategory === cat;
+                const activeClasses = isActive
+                    ? 'active bg-indigo-600 text-white shadow-sm'
+                    : 'bg-vault-card text-slate-400 hover:text-slate-200 border border-slate-800';
+                return `<button data-category="${escapeHtml(cat)}" onclick="selectCategory('${escapeHtml(cat)}')" class="filter-pill shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition ${activeClasses}">${escapeHtml(cat)}</button>`;
+            }).join('');
+        }
+
+        function selectCategory(category) {
+            activeCategory = category;
+            renderFilterPills();
+            renderSnippets();
+        }
+
+        // Render Filtered Snippets
+        function renderSnippets() {
+            const grid = document.getElementById('snippets-grid');
+            const emptyState = document.getElementById('empty-state');
+            const countLabel = document.getElementById('snippet-count');
+
+            const filtered = snippets.filter(snip => {
+                const matchesCat = activeCategory === 'All' || snip.category === activeCategory;
+                const q = searchQuery.toLowerCase().trim();
+                const matchesQuery = !q ||
+                    snip.title.toLowerCase().includes(q) ||
+                    snip.description.toLowerCase().includes(q) ||
+                    snip.category.toLowerCase().includes(q) ||
+                    snip.code.toLowerCase().includes(q);
+                return matchesCat && matchesQuery;
+            });
+
+            countLabel.textContent = `Showing ${filtered.length} of ${snippets.length} ${snippets.length === 1 ? 'snippet' : 'snippets'}`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                lucide.createIcons();
+                return;
+            }
+
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = filtered.map(snip => {
+                const meta = CATEGORY_META[snip.category] || DEFAULT_BADGE;
+                const lines = snip.code.split('\n');
+                const isLong = lines.length > 14;
+                const isExpanded = expandedCards.has(snip.id);
+                const maxHeightClass = isExpanded ? 'max-h-none' : 'max-h-[340px]';
+                const lineNumbersHtml = lines.map((_, i) => `<span>${i + 1}</span>`).join('');
+
+                return `
+                <article class="bg-vault-card border border-slate-800/90 hover:border-slate-700/90 rounded-2xl flex flex-col overflow-hidden shadow-xl shadow-black/30 transition duration-200">
+                    <!-- Card Header -->
+                    <div class="p-5 pb-4 flex items-start justify-between gap-3">
+                        <div class="space-y-1.5">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${meta.badgeClass}">
+                                    <span class="w-1.5 h-1.5 rounded-full ${meta.dotClass}"></span>
+                                    ${escapeHtml(snip.category)}
+                                </span>
+                                <span class="text-[11px] text-slate-500 font-mono">Python &bull; ${lines.length} lines</span>
+                            </div>
+                            <h2 class="text-base sm:text-lg font-semibold text-white leading-snug">${escapeHtml(snip.title)}</h2>
+                            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">${escapeHtml(snip.description)}</p>
+                        </div>
+
+                        <!-- Delete snippet button -->
+                        <button onclick="deleteSnippet('${snip.id}')" class="text-slate-500 hover:text-rose-400 p-1.5 rounded-lg hover:bg-slate-800/80 transition shrink-0" title="Remove snippet">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Code Toolbar -->
+                    <div class="px-4 py-2 bg-vault-code border-t border-b border-slate-800/80 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-slate-700/80"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-slate-700/80"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-slate-700/80"></span>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            ${isLong ? `
+                            <button onclick="toggleExpandCard('${snip.id}')" 
+                                class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 transition">
+                                <i data-lucide="${isExpanded ? 'minimize-2' : 'maximize-2'}" class="w-3.5 h-3.5 text-cyan-400"></i>
+                                <span>${isExpanded ? 'Collapse' : 'Expand'}</span>
+                            </button>
+                            ` : ''}
+                            <button onclick="copySnippetCode('${snip.id}', this)" 
+                                class="copy-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-indigo-600/15 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 hover:border-indigo-500 transition-all duration-150">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy Code</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Scrollable / Collapsible Code Block with Line Numbers -->
+                    <div class="relative bg-vault-code ${maxHeightClass} overflow-y-auto code-scroll flex items-start">
+                        <div aria-hidden="true" class="select-none py-4 pl-3.5 pr-3 text-right font-mono text-xs leading-relaxed text-slate-600 border-r border-slate-800/60 flex flex-col shrink-0">
+                            ${lineNumbersHtml}
+                        </div>
+                        <pre class="py-4 px-4 overflow-x-auto flex-1 font-mono text-xs sm:text-[13px] leading-relaxed text-slate-200 code-scroll"><code class="language-python">${escapeHtml(snip.code)}</code></pre>
+                    </div>
+
+                    ${isLong && !isExpanded ? `
+                    <button onclick="toggleExpandCard('${snip.id}')" class="w-full py-2 bg-vault-code/95 hover:bg-slate-900/90 border-t border-slate-800/80 text-[11px] font-medium text-cyan-400 hover:text-cyan-300 flex items-center justify-center gap-1 transition">
+                        <span>Show all ${lines.length} lines</span>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                    </button>
+                    ` : ''}
+                </article>
+                `;
+            }).join('');
+
+            // Apply Highlight.js Python syntax coloring safely
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+
+            lucide.createIcons();
+        }
+
+        // Toggle Expand / Collapse for long scripts
+        function toggleExpandCard(id) {
+            if (expandedCards.has(id)) {
+                expandedCards.delete(id);
+            } else {
+                expandedCards.add(id);
+            }
+            renderSnippets();
+        }
+
+        // Copy Snippet Code to Clipboard (Iframe-safe execCommand + green 'Copied!' badge)
+        function copySnippetCode(id, btnElement) {
+            const snippet = snippets.find(s => s.id === id);
+            if (!snippet) return;
+
+            copyTextSafely(snippet.code);
+
+            const originalHtml = btnElement.innerHTML;
+            btnElement.classList.remove('bg-indigo-600/15', 'hover:bg-indigo-600', 'text-indigo-300', 'border-indigo-500/30');
+            btnElement.classList.add('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40');
+            btnElement.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i><span>Copied!</span>`;
+            lucide.createIcons();
+
+            showToast(`Copied "${snippet.title}" to clipboard`);
+
+            setTimeout(() => {
+                btnElement.classList.remove('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40');
+                btnElement.classList.add('bg-indigo-600/15', 'hover:bg-indigo-600', 'text-indigo-300', 'border-indigo-500/30');
+                btnElement.innerHTML = originalHtml;
+                lucide.createIcons();
+            }, 2000);
+        }
+
+        // Cross-environment clipboard copy using execCommand
+        function copyTextSafely(text) {
+            const helper = document.getElementById('clipboard-helper');
+            helper.value = text;
+            helper.select();
+            helper.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('Clipboard copy failed:', err);
+            }
+        }
+
+        // Toast Notification
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'flex items-center gap-2 bg-vault-card border border-slate-700 text-slate-100 text-xs font-medium px-4 py-3 rounded-xl shadow-xl transition-all duration-300 translate-y-2 opacity-0';
+            toast.innerHTML = `<i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 shrink-0"></i><span>${escapeHtml(message)}</span>`;
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 2600);
+        }
+
+        // Setup Search, Modal Form, and Tab Key Listeners
+        function setupEventListeners() {
+            const searchInput = document.getElementById('search-input');
+            const clearBtn = document.getElementById('clear-search-btn');
+
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value;
+                clearBtn.classList.toggle('hidden', !searchQuery);
+                renderSnippets();
+            });
+
+            // Add Snippet Form Submission
+            document.getElementById('add-snippet-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const title = document.getElementById('input-title').value.trim();
+                const category = document.getElementById('input-category').value.trim() || 'Python';
+                const description = document.getElementById('input-desc').value.trim();
+                const code = document.getElementById('input-code').value.replace(/\r\n/g, '\n');
+
+                if (!title || !description || !code) return;
+
+                const newSnippet = {
+                    id: 'snip-' + Date.now(),
+                    title,
+                    category,
+                    description,
+                    code
+                };
+
+                snippets.unshift(newSnippet);
+                saveSnippets();
+                renderFilterPills();
+                renderSnippets();
+                closeAddModal();
+                e.target.reset();
+                document.getElementById('input-category').value = 'Machine Learning';
+                showToast('New snippet added to CodeVault!');
+            });
+
+            // Tab key inserts 4 spaces in code textarea
+            document.getElementById('input-code').addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+                    this.selectionStart = this.selectionEnd = start + 4;
+                }
+            });
+
+            // Close modals on backdrop click
+            document.getElementById('add-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'add-modal') closeAddModal();
+            });
+            document.getElementById('manage-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'manage-modal') closeManageModal();
+            });
+        }
+
+        function clearSearch() {
+            const searchInput = document.getElementById('search-input');
+            searchInput.value = '';
+            searchQuery = '';
+            document.getElementById('clear-search-btn').classList.add('hidden');
+            renderSnippets();
+        }
+
+        function resetFilters() {
+            clearSearch();
+            selectCategory('All');
+        }
+
+        function deleteSnippet(id) {
+            snippets = snippets.filter(s => s.id !== id);
+            expandedCards.delete(id);
+            saveSnippets();
+            renderFilterPills();
+            renderSnippets();
+            showToast('Snippet removed');
+        }
+
+        // Modal Controls
+        function openAddModal() {
+            const modal = document.getElementById('add-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('input-title').focus();
+        }
+
+        function closeAddModal() {
+            const modal = document.getElementById('add-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openManageModal() {
+            const modal = document.getElementById('manage-modal');
+            const exportArea = document.getElementById('export-json-area');
+            exportArea.value = JSON.stringify(snippets, null, 2);
+            resetArmed = false;
+            document.getElementById('reset-btn-text').textContent = 'Reset Defaults';
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeManageModal() {
+            const modal = document.getElementById('manage-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function copyJsonExport() {
+            const jsonText = document.getElementById('export-json-area').value;
+            copyTextSafely(jsonText);
+            showToast('JSON copied! Paste into DEFAULT_SNIPPETS for GitHub Pages.');
+        }
+
+        function downloadJsonFile() {
+            const jsonText = document.getElementById('export-json-area').value;
+            const blob = new Blob([jsonText], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'codevault-snippets.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Downloaded codevault-snippets.json');
+        }
+
+        // Two-step safe reset without confirm()
+        function handleResetDefaults() {
+            const btnText = document.getElementById('reset-btn-text');
+            if (!resetArmed) {
+                resetArmed = true;
+                btnText.textContent = 'Click again to confirm';
+                setTimeout(() => {
+                    resetArmed = false;
+                    btnText.textContent = 'Reset Defaults';
+                }, 3500);
+                return;
+            }
+
+            snippets = [...DEFAULT_SNIPPETS];
+            expandedCards.clear();
+            saveSnippets();
+            renderFilterPills();
+            renderSnippets();
+            document.getElementById('export-json-area').value = JSON.stringify(snippets, null, 2);
+            resetArmed = false;
+            btnText.textContent = 'Reset Defaults';
+            showToast('Restored all 19 default snippets');
+        }
+    </script>
+</body>
+</html>
