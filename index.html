@@ -1,0 +1,2781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeVault | Developer Code Snippet &amp; Dataset Hub</title>
+<style>
+  :root {
+    --bg: #0b0f19;
+    --bg-elevated: #111827;
+    --bg-card: #131c2e;
+    --bg-code: #080c14;
+    --bg-input: #0f1624;
+    --border: #1e293b;
+    --border-hover: #334155;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+    --accent: #6366f1;
+    --accent-hover: #4f46e5;
+    --cyan: #22d3ee;
+    --emerald: #10b981;
+    --amber: #f59e0b;
+    --purple: #a855f7;
+    --orange: #f97316;
+    --rose: #f43f5e;
+    --radius: 14px;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Header & Controls */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: rgba(11, 15, 25, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .header-inner {
+    padding: 14px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6366f1, #06b6d4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+    flex-shrink: 0;
+  }
+
+  .brand-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .brand-pill {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(34, 211, 238, 0.12);
+    color: var(--cyan);
+    border: 1px solid rgba(34, 211, 238, 0.25);
+  }
+
+  .brand-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color 0.15s, border-color 0.15s, transform 0.1s, color 0.15s;
+    font-family: var(--font-sans);
+    white-space: nowrap;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.28);
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-hover);
+  }
+
+  .btn-secondary {
+    background: var(--bg-elevated);
+    color: var(--text);
+    border-color: var(--border-hover);
+  }
+
+  .btn-secondary:hover {
+    background: #1e293b;
+  }
+
+  .btn-emerald {
+    background: var(--emerald);
+    color: #fff;
+  }
+
+  .btn-emerald:hover {
+    background: #059669;
+  }
+
+  .btn-copy {
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+    border-color: rgba(99, 102, 241, 0.35);
+    padding: 6px 12px;
+    font-size: 0.78rem;
+  }
+
+  .btn-copy:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .btn-copy.copied {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+    border-color: rgba(16, 185, 129, 0.45);
+  }
+
+  .btn-sm {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    border-radius: 8px;
+  }
+
+  .btn-danger {
+    background: rgba(244, 63, 94, 0.12);
+    color: #fda4af;
+    border-color: rgba(244, 63, 94, 0.3);
+  }
+
+  .btn-danger:hover {
+    background: rgba(244, 63, 94, 0.22);
+  }
+
+  /* Search & Filter Bar */
+  .controls-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  @media (min-width: 900px) {
+    .controls-row {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    max-width: 420px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 34px 8px 34px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-input:focus {
+    border-color: var(--cyan);
+  }
+
+  .clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px 6px;
+    font-size: 0.85rem;
+    display: none;
+  }
+
+  .pills-scroll {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+
+  .pill {
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 6px 11px;
+    border-radius: 10px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s;
+  }
+
+  .pill:hover {
+    color: #fff;
+    border-color: var(--border-hover);
+  }
+
+  .pill.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .pill.active[data-cat="CSV Datasets"] {
+    background: var(--emerald);
+    border-color: var(--emerald);
+  }
+
+  .pill.active[data-cat="Git & Docker"] {
+    background: var(--orange);
+    border-color: var(--orange);
+  }
+
+  .pill-count {
+    font-size: 0.68rem;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  /* Main Grid */
+  main {
+    flex: 1;
+    padding: 24px 0 48px;
+  }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media (min-width: 960px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* Snippet & CSV Card */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    transition: border-color 0.2s;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+  }
+
+  .card.csv-card {
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .card-header {
+    padding: 16px 18px 14px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .badge-viz { background: rgba(14, 165, 233, 0.12); color: #38bdf8; border-color: rgba(14, 165, 233, 0.28); }
+  .badge-viz .badge-dot { background: #38bdf8; }
+
+  .badge-prep { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border-color: rgba(245, 158, 11, 0.28); }
+  .badge-prep .badge-dot { background: #fbbf24; }
+
+  .badge-ml { background: rgba(99, 102, 241, 0.14); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.3); }
+  .badge-ml .badge-dot { background: #818cf8; }
+
+  .badge-dl { background: rgba(168, 85, 247, 0.14); color: #d8b4fe; border-color: rgba(168, 85, 247, 0.3); }
+  .badge-dl .badge-dot { background: #c084fc; }
+
+  .badge-nlp { background: rgba(6, 182, 212, 0.14); color: #67e8f9; border-color: rgba(6, 182, 212, 0.3); }
+  .badge-nlp .badge-dot { background: #22d3ee; }
+
+  .badge-cli { background: rgba(249, 115, 22, 0.14); color: #fdba74; border-color: rgba(249, 115, 22, 0.3); }
+  .badge-cli .badge-dot { background: #fb923c; }
+
+  .badge-csv { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.32); }
+  .badge-csv .badge-dot { background: #34d399; }
+
+  .badge-default { background: rgba(20, 184, 166, 0.14); color: #5eead4; border-color: rgba(20, 184, 166, 0.3); }
+  .badge-default .badge-dot { background: #2dd4bf; }
+
+  .meta-info {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+    line-height: 1.35;
+  }
+
+  .card-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+
+  .used-in-tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(99, 102, 241, 0.12);
+    color: #c7d2fe;
+    border: 1px solid rgba(99, 102, 241, 0.25);
+  }
+
+  .delete-icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .delete-icon-btn:hover {
+    color: var(--rose);
+    background: rgba(244, 63, 94, 0.12);
+  }
+
+  /* Toolbar inside Card */
+  .card-toolbar {
+    background: var(--bg-code);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .window-dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #334155;
+  }
+
+  .toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .toggle-group {
+    display: inline-flex;
+    background: #0f172a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2px;
+  }
+
+  .toggle-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .toggle-btn.active {
+    background: rgba(16, 185, 129, 0.22);
+    color: #6ee7b7;
+  }
+
+  /* Code Container */
+  .code-wrapper {
+    background: var(--bg-code);
+    display: flex;
+    align-items: flex-start;
+    overflow-y: auto;
+    max-height: 320px;
+  }
+
+  .code-wrapper.expanded {
+    max-height: none;
+  }
+
+  .line-numbers {
+    user-select: none;
+    padding: 14px 10px 14px 12px;
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    line-height: 1.55;
+    color: #475569;
+    border-right: 1px solid rgba(30, 41, 59, 0.7);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  pre.code-block {
+    margin: 0;
+    padding: 14px 16px;
+    overflow-x: auto;
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: #e2e8f0;
+    tab-size: 4;
+  }
+
+  /* Built-in Regex Syntax Highlighting Colors */
+  .tok-comment { color: #64748b; font-style: italic; }
+  .tok-string  { color: #86efac; }
+  .tok-keyword { color: #c084fc; font-weight: 600; }
+  .tok-builtin { color: #38bdf8; }
+  .tok-number  { color: #fbbf24; }
+  .tok-cmd     { color: #fb923c; font-weight: 600; }
+  .tok-flag    { color: #67e8f9; }
+
+  /* CSV Table View */
+  .table-wrapper {
+    background: var(--bg-code);
+    overflow-x: auto;
+  }
+
+  table.csv-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-align: left;
+  }
+
+  table.csv-table th {
+    background: #0f172a;
+    color: #6ee7b7;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  table.csv-table td {
+    padding: 7px 12px;
+    border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+    color: #cbd5e1;
+    white-space: nowrap;
+  }
+
+  table.csv-table tr:hover td {
+    background: rgba(30, 41, 59, 0.35);
+  }
+
+  .expand-bar {
+    width: 100%;
+    background: #0a0f1a;
+    border: none;
+    border-top: 1px solid var(--border);
+    color: var(--cyan);
+    font-size: 0.74rem;
+    font-weight: 600;
+    padding: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s;
+  }
+
+  .expand-bar:hover {
+    background: #111827;
+  }
+
+  .expand-bar.csv-expand {
+    color: #34d399;
+  }
+
+  /* Empty State */
+  .empty-state {
+    display: none;
+    text-align: center;
+    padding: 48px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .empty-state.visible {
+    display: block;
+  }
+
+  /* Modals */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .modal-backdrop.open {
+    display: flex;
+  }
+
+  .modal-box {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-hover);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-header h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  @media (min-width: 600px) {
+    .form-row {
+      grid-template-columns: 2fr 1fr;
+    }
+    .form-row-equal {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  label {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #cbd5e1;
+  }
+
+  input[type="text"], textarea, select {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 12px;
+    color: #fff;
+    font-size: 0.84rem;
+    outline: none;
+    font-family: var(--font-sans);
+  }
+
+  textarea {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  input[type="text"]:focus, textarea:focus {
+    border-color: var(--cyan);
+  }
+
+  .type-switcher {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .type-choice {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .type-choice.selected-code {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .type-choice.selected-csv {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: var(--emerald);
+    color: #fff;
+  }
+
+  .csv-drop-box {
+    display: none;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px dashed rgba(16, 185, 129, 0.4);
+    border-radius: 10px;
+    padding: 12px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .csv-drop-box.visible {
+    display: flex;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Toast */
+  .toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  .toast {
+    background: #1e293b;
+    color: #f8fafc;
+    border: 1px solid #334155;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.2s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(12px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 0;
+    font-size: 0.76rem;
+    color: var(--text-dim);
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+</style>
+</head>
+<body>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="container header-inner">
+      <div class="top-row">
+        <div class="brand">
+          <div class="logo-box">&lt;/&gt;</div>
+          <div>
+            <div class="brand-title">
+              CodeVault
+              <span class="brand-pill">Offline &amp; Online Ready</span>
+            </div>
+            <div class="brand-sub">Python Data Science, ML, NLP, CSV Datasets &amp; Git/Docker CLI</div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button type="button" class="btn btn-secondary" onclick="openManageModal()">Export / Reset</button>
+          <button type="button" class="btn btn-primary" onclick="openAddModal()">+ Add Snippet / CSV</button>
+        </div>
+      </div>
+
+      <div class="controls-row">
+        <div class="search-wrap">
+          <span class="search-icon">&#128269;</span>
+          <input type="text" id="search-input" class="search-input" placeholder="Search title, CSV filename, category, or code...">
+          <button type="button" id="clear-search-btn" class="clear-btn" onclick="clearSearch()" title="Clear search">&#10005;</button>
+        </div>
+        <div id="filter-pills" class="pills-scroll"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <div class="container">
+      <div class="status-bar">
+        <span id="snippet-count">Loading items...</span>
+        <span>100% self-contained &bull; Works offline in mobile viewers &amp; on GitHub Pages</span>
+      </div>
+
+      <div id="snippets-grid" class="grid"></div>
+
+      <div id="empty-state" class="empty-state">
+        <h3 style="color:#fff; margin-bottom:6px;">No matching items found</h3>
+        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:14px;">Try clearing your search filter or switching categories.</p>
+        <button type="button" class="btn btn-secondary" onclick="resetFilters()">Show All 27 Items</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-inner">
+      <span>CodeVault &bull; Zero-Dependency Single-File Hub</span>
+      <span>19 Python Programs &bull; 5 CSV Datasets &bull; 3 Git &amp; Docker Guides</span>
+    </div>
+  </footer>
+
+  <!-- Add Snippet / CSV Modal -->
+  <div id="add-modal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Add Code Snippet or CSV Dataset</h2>
+        <button type="button" class="delete-icon-btn" onclick="closeAddModal()">&#10005;</button>
+      </div>
+      <form id="add-snippet-form" class="modal-body">
+        <div class="form-group">
+          <label>Entry Type *</label>
+          <div class="type-switcher">
+            <button type="button" id="type-btn-code" class="type-choice selected-code" onclick="setModalType('code')">Python / CLI Code</button>
+            <button type="button" id="type-btn-csv" class="type-choice" onclick="setModalType('csv')">CSV Dataset</button>
+          </div>
+        </div>
+
+        <div id="csv-upload-box" class="csv-drop-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+            <div>
+              <strong style="font-size:0.78rem; color:#6ee7b7;">Upload a .csv file from device</strong>
+              <p style="font-size:0.72rem; color:var(--text-muted);">Auto-fills filename, title, and CSV rows below.</p>
+            </div>
+            <label class="btn btn-emerald btn-sm" style="cursor:pointer;">
+              Choose .csv File
+              <input type="file" id="csv-file-input" accept=".csv,text/csv" style="display:none;">
+            </label>
+          </div>
+          <div class="form-row form-row-equal">
+            <div class="form-group">
+              <label>CSV Filename *</label>
+              <input type="text" id="input-filename" placeholder="e.g., students.csv">
+            </div>
+            <div class="form-group">
+              <label>Used In Script (Optional)</label>
+              <input type="text" id="input-used-in" placeholder="e.g., Linear Regression">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label id="label-title">Title *</label>
+            <input type="text" id="input-title" required placeholder="e.g., Random Forest Classifier">
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <input type="text" id="input-category" list="cat-list" required value="Machine Learning">
+            <datalist id="cat-list">
+              <option value="Data Visualization">
+              <option value="Data Preprocessing">
+              <option value="Machine Learning">
+              <option value="Deep Learning">
+              <option value="NLP">
+              <option value="Git & Docker">
+              <option value="CSV Datasets">
+            </datalist>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description *</label>
+          <input type="text" id="input-desc" required placeholder="Brief summary of what this code or dataset does...">
+        </div>
+
+        <div class="form-group">
+          <label id="label-code">Code / Commands *</label>
+          <textarea id="input-code" rows="8" required placeholder="Paste code or CSV rows here..."></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
+          <button type="submit" id="save-item-btn" class="btn btn-primary">Save Snippet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Export / Reset Modal -->
+  <div id="manage-modal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Export JSON &amp; Reset Defaults</h2>
+        <button type="button" class="delete-icon-btn" onclick="closeManageModal()">&#10005;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.78rem; color:var(--text-muted); background:var(--bg-input); padding:10px 12px; border-radius:10px; border:1px solid var(--border);">
+          Copy or download your current snippets as JSON, or restore all 27 built-in Python programs, CSV datasets, and Git/Docker guides.
+        </p>
+        <div class="form-group">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label>JSON Backup</label>
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="downloadJsonBackup()">Download .json</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="copyJsonBackup()">Copy JSON</button>
+            </div>
+          </div>
+          <textarea id="export-json-area" rows="8" readonly></textarea>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; padding-top:10px; border-top:1px solid var(--border);">
+          <div>
+            <strong style="font-size:0.8rem; color:#fda4af;">Restore Default 27 Items</strong>
+            <p style="font-size:0.72rem; color:var(--text-dim);">Resets the list back to all 19 Python snippets, 5 CSV datasets &amp; 3 CLI guides.</p>
+          </div>
+          <button type="button" class="btn btn-danger" onclick="handleResetDefaults()">
+            <span id="reset-label">Reset Defaults</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden textarea for universal execCommand('copy') fallback -->
+  <textarea id="clipboard-fallback" style="position:fixed; top:-9999px; left:0; opacity:0;" aria-hidden="true"></textarea>
+
+<script>
+// Safe Storage Wrapper (prevents SecurityError crashes in Android content:// or file:// HTML viewers)
+var SafeStore = (function() {
+  var memoryCache = {};
+  return {
+    get: function(key) {
+      try {
+        if (window.localStorage) {
+          return window.localStorage.getItem(key);
+        }
+      } catch (e) {}
+      return Object.prototype.hasOwnProperty.call(memoryCache, key) ? memoryCache[key] : null;
+    },
+    set: function(key, val) {
+      memoryCache[key] = val;
+      try {
+        if (window.localStorage) {
+          window.localStorage.setItem(key, val);
+        }
+      } catch (e) {}
+    }
+  };
+})();
+
+// All 27 Built-in Items (9 Data Visualization + 3 Data Preprocessing + 5 Machine Learning + 1 Deep Learning + 1 NLP + 5 CSV Datasets + 3 Git & Docker)
+var DEFAULT_SNIPPETS = [
+  // --- 9 DATA VISUALIZATION PYTHON SNIPPETS ---
+  {
+    id: "viz-1",
+    type: "code",
+    language: "python",
+    title: "Data Visualization Setup & Dataset Load",
+    category: "Data Visualization",
+    description: "Import Matplotlib and Pandas and load the Titanic CSV dataset.",
+    code: [
+      "import matplotlib.pyplot as plt",
+      "import pandas as pd",
+      "df=pd.read_csv('C:/Users/user/Downloads/kaggle/titanic (1).csv')",
+      "df"
+    ].join("\n")
+  },
+  {
+    id: "viz-2",
+    type: "code",
+    language: "python",
+    title: "Count of Sex (Bar Chart)",
+    category: "Data Visualization",
+    description: "Plot a bar chart showing how many males and females were on board with labeled axes.",
+    code: [
+      "a= df['sex'].value_counts().sort_index()",
+      "plt.bar(a.index, a.values)",
+      "plt.xlabel('Sex')",
+      "plt.ylabel('Number of Passengers')",
+      "plt.title('count of sex')",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "viz-3",
+    type: "code",
+    language: "python",
+    title: "Age vs Survival Status (Bar Chart)",
+    category: "Data Visualization",
+    description: "Plot a bar chart comparing passenger age with respect to survival status (alive).",
+    code: [
+      "plt.bar(df['alive'],df['age'])",
+      "plt.title(\"alive and not alive passengers\")",
+      "plt.xlabel(\"alive\")",
+      "plt.ylabel(\"passengers age\")",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "viz-4",
+    type: "code",
+    language: "python",
+    title: "Distribution of Passenger Ages (Histogram)",
+    category: "Data Visualization",
+    description: "Plot a histogram dividing passenger ages into 10 equal groups (bins).",
+    code: [
+      "plt.hist(df['age'],bins=10)",
+      "plt.title(\"distrubution of age\")",
+      "plt.xlabel(\"group of age\")",
+      "plt.ylabel(\"passengers\")",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "viz-5",
+    type: "code",
+    language: "python",
+    title: "Passengers in Each Class (Line Graph)",
+    category: "Data Visualization",
+    description: "Plot a line graph to visualize the number of passengers in each class.",
+    code: [
+      "a=df['class'].value_counts()",
+      "plt.title(\"count of class\")",
+      "plt.xlabel(\"class\")",
+      "plt.ylabel(\"passengers\")",
+      "a.plot(kind='line')"
+    ].join("\n")
+  },
+  {
+    id: "viz-6",
+    type: "code",
+    language: "python",
+    title: "Deck and Survived (Line Graph with Markers)",
+    category: "Data Visualization",
+    description: "Plot a line graph with circular markers comparing deck and survival count.",
+    code: [
+      "a=df[['deck','survived']].value_counts().unstack()",
+      "a.plot(kind='line',marker='o')",
+      "plt.title(\"deck and survived\")",
+      "plt.xlabel(\"deck\")",
+      "plt.ylabel(\"passengers\")",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "viz-7",
+    type: "code",
+    language: "python",
+    title: "Age vs Fare (Scatter Plot)",
+    category: "Data Visualization",
+    description: "Plot a scatter plot comparing passenger age against ticket fare.",
+    code: [
+      "plt.scatter(df['age'],df['fare'])",
+      "plt.title(\"distrubution of age vs fare\")",
+      "plt.xlabel(\"group of age\")",
+      "plt.ylabel(\"fare\")",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "viz-8",
+    type: "code",
+    language: "python",
+    title: "Passenger Class Distribution (Pie Chart)",
+    category: "Data Visualization",
+    description: "Plot a pie chart showing the percentage distribution across passenger classes.",
+    code: [
+      "plt.pie(df['class'].value_counts(),labels=[1,2,3],autopct='%1.2f%%')",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "viz-9",
+    type: "code",
+    language: "python",
+    title: "Distribution of Ticket Fares (Box Plot)",
+    category: "Data Visualization",
+    description: "Draw a box plot to visualize the spread and quartiles of ticket fares.",
+    code: [
+      "plt.boxplot(df['fare'])",
+      "plt.title(\"distribution of fare\")",
+      "plt.ylabel(\"fare\")",
+      "plt.show()"
+    ].join("\n")
+  },
+
+  // --- 3 DATA PREPROCESSING PYTHON SNIPPETS ---
+  {
+    id: "prep-1",
+    type: "code",
+    language: "python",
+    title: "Iris Dataset Exploration & Preprocessing",
+    category: "Data Preprocessing",
+    description: "Explore the Iris dataset, map target species names, standardize features with StandardScaler, and split train/test sets.",
+    code: [
+      "# Import Libraries",
+      "import pandas as pd",
+      "from sklearn.datasets import load_iris",
+      "from sklearn.model_selection import train_test_split",
+      "from sklearn.preprocessing import StandardScaler",
+      "",
+      "# Load Iris Dataset and Convert into DataFrame",
+      "iris = load_iris()",
+      "",
+      "df = pd.DataFrame(",
+      "    iris.data,",
+      "    columns=iris.feature_names",
+      ")",
+      "",
+      "# Add Target Column",
+      "df['species'] = iris.target",
+      "",
+      "print(\"Target Values:\", iris.target_names)",
+      "print(df.head())",
+      "",
+      "# Data Exploration",
+      "print(\"\\nDataset Information:\")",
+      "print(df.info())",
+      "",
+      "print(\"\\nDataset Shape:\")",
+      "print(df.shape)",
+      "",
+      "print(\"\\nColumn Names:\")",
+      "print(df.columns)",
+      "",
+      "print(\"\\nMissing Values:\")",
+      "print(df.isnull().sum())",
+      "",
+      "print(\"\\nNumber of Flowers in Each Species:\")",
+      "print(df['species'].value_counts())",
+      "",
+      "# Convert Target Numbers into Species Names",
+      "df['species_name'] = df['species'].map({",
+      "    0: 'Setosa',",
+      "    1: 'Versicolor',",
+      "    2: 'Virginica'",
+      "})",
+      "",
+      "print(\"\\nData with Species Names:\")",
+      "print(df.head())",
+      "",
+      "# Preprocessing",
+      "X = df[iris.feature_names]",
+      "y = df['species']",
+      "",
+      "# Standardization",
+      "scaler = StandardScaler()",
+      "X_scaled = scaler.fit_transform(X)",
+      "",
+      "print(\"\\nScaled Features:\")",
+      "print(X_scaled[:5])",
+      "",
+      "# Train-Test Split",
+      "X_train, X_test, y_train, y_test = train_test_split(",
+      "    X_scaled,",
+      "    y,",
+      "    test_size=0.2,",
+      "    random_state=42",
+      ")",
+      "",
+      "# Display Training and Testing Data Shapes",
+      "print(\"\\nTraining Data Shape:\", X_train.shape)",
+      "print(\"\\nTraining Target Shape:\", y_train.shape)",
+      "",
+      "print(\"\\nTesting Data Shape:\", X_test.shape)",
+      "print(\"\\nTesting Target Shape:\", y_test.shape)"
+    ].join("\n")
+  },
+  {
+    id: "prep-2",
+    type: "code",
+    language: "python",
+    title: "Missing Values Imputation",
+    category: "Data Preprocessing",
+    description: "Visualize missing values using missingno bar/matrix plots and handle them with dropna, arbitrary value, mean, mode, median, ffill, and bfill.",
+    code: [
+      "# 1. Import Libraries",
+      "import pandas as pd",
+      "import numpy as np",
+      "import missingno as msno",
+      "import seaborn as sns",
+      "import matplotlib.pyplot as plt",
+      "",
+      "# 2. Load Dataset and Display Information",
+      "df = sns.load_dataset(\"titanic\")",
+      "",
+      "print(\"Dataset Information:\")",
+      "df.info()",
+      "",
+      "# 3. Count Missing Values",
+      "print(\"\\nMissing Values Count:\")",
+      "print(df.isnull().sum())",
+      "",
+      "# 4. Visualize Missing Values Using Bar Plot",
+      "msno.bar(df)",
+      "plt.title(\"Bar Plot of Missing Values\")",
+      "plt.show()",
+      "",
+      "# 5. Visualize Missing Values Using Matrix Plot",
+      "msno.matrix(df)",
+      "plt.title(\"Matrix Plot of Missing Values\")",
+      "plt.show()",
+      "",
+      "# 6. Delete Rows with Missing Values",
+      "print(\"\\nDeleting Rows with Missing Values:\")",
+      "new_df = df.dropna(axis=0)",
+      "",
+      "print(new_df.isnull().sum())",
+      "print(\"Dataset Information:\")",
+      "new_df.info()",
+      "",
+      "# 7. Delete the 'deck' Column",
+      "print(\"\\nColumns in Dataset:\")",
+      "print(df.columns)",
+      "",
+      "col = df.drop(\"deck\", axis=1)",
+      "",
+      "print(\"\\nDataset After Deleting Column:\")",
+      "print(col)",
+      "",
+      "# 8. Replace Missing Values with Arbitrary Value",
+      "df[\"deck\"] = df[\"deck\"].fillna(\"C\")",
+      "",
+      "print(\"\\nMissing Values After Replacing:\")",
+      "print(df[\"deck\"].isnull().sum())",
+      "",
+      "# 9. Replace Missing Values with Mean",
+      "mean = df[\"age\"].mean()",
+      "",
+      "print(\"Mean:\", mean)",
+      "",
+      "df[\"age\"] = df[\"age\"].fillna(mean)",
+      "",
+      "print(\"\\nAge Column After Mean Imputation:\")",
+      "print(df[\"age\"])",
+      "",
+      "# 10. Replace Missing Values with Mode",
+      "mode = df[\"deck\"].mode()[0]",
+      "",
+      "print(\"Mode:\", mode)",
+      "",
+      "df[\"deck\"] = df[\"deck\"].fillna(mode)",
+      "",
+      "print(\"\\nDeck Column After Mode Imputation:\")",
+      "print(df[\"deck\"])",
+      "",
+      "# 11. Replace Missing Values with Median",
+      "median = df[\"age\"].median()",
+      "",
+      "print(\"Median:\", median)",
+      "",
+      "df[\"age\"] = df[\"age\"].fillna(median)",
+      "",
+      "print(\"\\nAge Column After Median Imputation:\")",
+      "print(df[\"age\"])",
+      "",
+      "# 12. Forward Fill",
+      "print(\"\\nForward Fill:\")",
+      "new_df = df.ffill()",
+      "",
+      "print(new_df)",
+      "",
+      "# 13. Backward Fill",
+      "print(\"\\nBackward Fill:\")",
+      "new_df = df.bfill()",
+      "",
+      "print(new_df)"
+    ].join("\n")
+  },
+  {
+    id: "prep-3",
+    type: "code",
+    language: "python",
+    title: "Outlier Detection and Handling",
+    category: "Data Preprocessing",
+    description: "Detect outliers on Titanic age and fare using plots and IQR bounds, then remove, winsorize (1%/99% clip), or replace with mean and median.",
+    code: [
+      "# Import Libraries",
+      "import numpy as np",
+      "import pandas as pd",
+      "import seaborn as sns",
+      "import matplotlib.pyplot as plt",
+      "",
+      "# Load Dataset",
+      "tdf = sns.load_dataset(\"titanic\")",
+      "print(tdf)",
+      "",
+      "# Scatter Plot to Detect Outliers",
+      "fig, ax = plt.subplots(figsize=(10, 4))",
+      "ax.scatter(tdf[\"age\"], tdf[\"fare\"])",
+      "ax.set_xlabel(\"Age\")",
+      "ax.set_ylabel(\"Fare\")",
+      "plt.title(\"Scatter Plot\")",
+      "plt.show()",
+      "",
+      "# Box Plot to Detect Outliers",
+      "tdf[\"age\"].plot(kind=\"box\")",
+      "plt.title(\"Box Plot of Age\")",
+      "plt.show()",
+      "",
+      "# Histogram",
+      "tdf[\"fare\"].plot(kind=\"hist\", bins=20)",
+      "plt.title(\"Histogram of Fare\")",
+      "plt.show()",
+      "",
+      "# Finding Outliers and IQR",
+      "q1 = tdf[\"age\"].quantile(0.25)",
+      "q3 = tdf[\"age\"].quantile(0.75)",
+      "",
+      "iqr = q3 - q1",
+      "",
+      "print(\"Q1:\", q1)",
+      "print(\"Q3:\", q3)",
+      "print(\"IQR:\", iqr)",
+      "",
+      "# Finding Upper and Lower Whiskers",
+      "ub = q3 + 1.5 * iqr",
+      "lb = q1 - 1.5 * iqr",
+      "",
+      "print(\"Upper Bound:\", ub)",
+      "print(\"Lower Bound:\", lb)",
+      "",
+      "# Finding Outliers",
+      "agearr = tdf[\"age\"]",
+      "outliers = agearr[(agearr < lb) | (agearr > ub)]",
+      "",
+      "print(\"Outliers in Age:\")",
+      "print(outliers)",
+      "",
+      "# Removing Outliers",
+      "t_remove = tdf.copy()",
+      "",
+      "ui = t_remove[t_remove[\"age\"] > ub].index",
+      "li = t_remove[t_remove[\"age\"] < lb].index",
+      "",
+      "t_remove.drop(ui, inplace=True)",
+      "t_remove.drop(li, inplace=True)",
+      "",
+      "print(\"Dataset After Removing Outliers\")",
+      "print(t_remove.info())",
+      "",
+      "# Replacing Outliers with Upper and Lower Caps",
+      "t_cap = tdf.copy()",
+      "",
+      "farearr = t_cap[\"fare\"].dropna()",
+      "",
+      "uc = np.percentile(farearr, 99)",
+      "lc = np.percentile(farearr, 1)",
+      "",
+      "print(\"Upper Cap:\", uc)",
+      "print(\"Lower Cap:\", lc)",
+      "",
+      "t_cap[\"fare\"] = t_cap[\"fare\"].clip(lower=lc, upper=uc)",
+      "",
+      "print(\"Dataset After Winsorization\")",
+      "print(t_cap)",
+      "",
+      "# Replacing Outliers with Mean",
+      "t_mean = tdf.copy()",
+      "",
+      "meanage = t_mean[\"age\"].mean()",
+      "",
+      "t_mean[\"age\"] = np.where(",
+      "    (t_mean[\"age\"] < lb) | (t_mean[\"age\"] > ub),",
+      "    meanage,",
+      "    t_mean[\"age\"]",
+      ")",
+      "",
+      "print(\"Dataset After Replacing Outliers with Mean\")",
+      "print(t_mean[\"age\"])",
+      "",
+      "# Replacing Outliers with Median",
+      "t_median = tdf.copy()",
+      "",
+      "medianage = t_median[\"age\"].median()",
+      "",
+      "t_median[\"age\"] = np.where(",
+      "    (t_median[\"age\"] < lb) | (t_median[\"age\"] > ub),",
+      "    medianage,",
+      "    t_median[\"age\"]",
+      ")",
+      "",
+      "print(\"Dataset After Replacing Outliers with Median\")",
+      "print(t_median[\"age\"])"
+    ].join("\n")
+  },
+
+  // --- 5 MACHINE LEARNING PYTHON SNIPPETS ---
+  {
+    id: "ml-1",
+    type: "code",
+    language: "python",
+    title: "K-Means Clustering (Mall Customers)",
+    category: "Machine Learning",
+    description: "Find optimal clusters via the Elbow Method (WCSS 1..10) and plot 5 customer segments with centroids.",
+    code: [
+      "import numpy as np",
+      "import pandas as pd",
+      "import matplotlib.pyplot as plt",
+      "import seaborn as sns",
+      "from sklearn.cluster import KMeans",
+      "import warnings",
+      "warnings.filterwarnings('ignore')",
+      "",
+      "data = pd.read_csv('Mall_Customers.csv')",
+      "data.head()",
+      "",
+      "x = data.iloc[:, 3:5].values",
+      "wcss = []",
+      "",
+      "for i in range(1, 11):",
+      "    kmeans = KMeans(n_clusters = i)",
+      "    kmeans.fit(x)",
+      "    wcss.append(kmeans.inertia_)",
+      "",
+      "plt.plot(range(1, 11), wcss)",
+      "plt.title('The Elbow Method')",
+      "plt.xlabel('No. of Clusters')",
+      "plt.ylabel('wcss')",
+      "plt.show()",
+      "",
+      "km1 = KMeans(n_clusters = 5, init = 'k-means++', max_iter = 300, n_init = 10, random_state = 0)",
+      "y_means = km1.fit_predict(x)",
+      "plt.scatter(x[y_means == 0, 0], x[y_means == 0, 1], s = 100, c = 'pink', label = 'C1:Kanjoos')",
+      "plt.scatter(x[y_means == 1, 0], x[y_means == 1, 1], s = 100, c = 'yellow', label = 'C2:Average')",
+      "plt.scatter(x[y_means == 2, 0], x[y_means == 2, 1], s = 100, c = 'cyan', label = 'C3:Bakra/Target')",
+      "plt.scatter(x[y_means == 3, 0], x[y_means == 3, 1], s = 100, c = 'magenta', label = 'C4:Pokiri')",
+      "plt.scatter(x[y_means == 4, 0], x[y_means == 4, 1], s = 100, c = 'orange', label = 'C5:Intelligent')",
+      "plt.scatter(km1.cluster_centers_[:,0], km1.cluster_centers_[:, 1], s = 50, c = 'blue' , label = 'centroid')",
+      "plt.title('K Means Clustering')",
+      "plt.xlabel('Annual Income')",
+      "plt.ylabel('Spending Score')",
+      "plt.legend()"
+    ].join("\n")
+  },
+  {
+    id: "ml-2",
+    type: "code",
+    language: "python",
+    title: "Support Vector Machine (SVM Classifier)",
+    category: "Machine Learning",
+    description: "Classify apples and oranges using SVC, evaluate confusion matrix accuracy, and predict new fruit samples.",
+    code: [
+      "#A program to demonstrate the usage of SVM",
+      "import seaborn as sns",
+      "import pandas as pd",
+      "import matplotlib.pyplot as plt",
+      "from sklearn.model_selection import train_test_split",
+      "from sklearn.svm import SVC",
+      "from sklearn.metrics import confusion_matrix",
+      "",
+      "data = pd.read_csv('apples_and_oranges.csv')",
+      "y = data['Class']",
+      "X = data.drop('Class', axis=1)",
+      "",
+      "sns.scatterplot(x='Weight', y='Size', hue='Class', data=data)",
+      "plt.show()",
+      "",
+      "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=10)",
+      "",
+      "classifier = SVC()",
+      "classifier.fit(X_train, y_train)",
+      "y_pred = classifier.predict(X_test)",
+      "print(y_pred)",
+      "cm = confusion_matrix(y_test, y_pred)",
+      "print(cm)",
+      "accuracy = float(cm.diagonal().sum()) / len(y_test)",
+      "print('model accuracy is:', accuracy * 100, '%')",
+      "X_test1 = [[73,6]]  # for new data testing",
+      "y_pred1 = classifier.predict(X_test1)",
+      "print('predicted class is:', y_pred1[0])"
+    ].join("\n")
+  },
+  {
+    id: "ml-3",
+    type: "code",
+    language: "python",
+    title: "Logistic Regression (Fish Species Classification)",
+    category: "Machine Learning",
+    description: "Standardize features with StandardScaler and train a Logistic Regression model with a Seaborn confusion matrix heatmap.",
+    code: [
+      "import matplotlib.pyplot as plt",
+      "import pandas as pd",
+      "import seaborn as sns",
+      "from sklearn.linear_model import LogisticRegression",
+      "from sklearn.metrics import confusion_matrix, accuracy_score",
+      "from sklearn.model_selection import train_test_split",
+      "from sklearn.preprocessing import StandardScaler",
+      "",
+      "df = pd.read_csv('dataset_Fish.csv')",
+      "print(df.head())",
+      "y = df['Species']",
+      "X = df.drop('Species', axis=1)",
+      "",
+      "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)",
+      "",
+      "scaler = StandardScaler()",
+      "X_train_scaled = scaler.fit_transform(X_train)",
+      "X_test_scaled = scaler.transform(X_test)",
+      "",
+      "model = LogisticRegression()",
+      "model.fit(X_train_scaled, y_train)",
+      "y_pred = model.predict(X_test_scaled)",
+      "print('Accuracy:', accuracy_score(y_test, y_pred))",
+      "",
+      "cm = confusion_matrix(y_test, y_pred)",
+      "plt.figure()",
+      "sns.heatmap(cm,annot=True)",
+      "plt.xlabel('Predicted Species')",
+      "plt.ylabel('Actual Species')",
+      "plt.title('Confusion Matrix Heatmap - Fish Classification')",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "ml-4",
+    type: "code",
+    language: "python",
+    title: "Decision Tree and Random Forest Classification Using Breast Cancer Dataset",
+    category: "Machine Learning",
+    description: "Train and compare DecisionTreeClassifier and RandomForestClassifier on load_breast_cancer with confusion matrices and classification reports.",
+    code: [
+      "# Import Libraries",
+      "import pandas as pd",
+      "import matplotlib.pyplot as plt",
+      "import warnings",
+      "warnings.filterwarnings(\"ignore\")",
+      "",
+      "from sklearn.datasets import load_breast_cancer",
+      "from sklearn.model_selection import train_test_split",
+      "from sklearn.tree import DecisionTreeClassifier",
+      "from sklearn.ensemble import RandomForestClassifier",
+      "from sklearn.metrics import (",
+      "    accuracy_score,",
+      "    ConfusionMatrixDisplay,",
+      "    classification_report",
+      ")",
+      "",
+      "# Load Breast Cancer Dataset",
+      "cancer_data = load_breast_cancer()",
+      "",
+      "print(type(cancer_data))",
+      "print(list(cancer_data.target_names))",
+      "",
+      "# Convert Data into DataFrame",
+      "df = pd.DataFrame(",
+      "    cancer_data.data,",
+      "    columns=cancer_data.feature_names",
+      ")",
+      "",
+      "# Train-Test Split",
+      "X_train, X_test, y_train, y_test = train_test_split(",
+      "    df,",
+      "    cancer_data.target,",
+      "    random_state=42,",
+      "    test_size=0.33",
+      ")",
+      "",
+      "# -------------------------------",
+      "# Decision Tree Classifier",
+      "# -------------------------------",
+      "",
+      "dtc = DecisionTreeClassifier()",
+      "dtc.fit(X_train, y_train)",
+      "",
+      "# Test the Model",
+      "y_pred = dtc.predict(X_test)",
+      "",
+      "print(\"\\nDecision Tree Classification\")",
+      "print(\"Accuracy:\", accuracy_score(y_test, y_pred))",
+      "",
+      "# Plot Confusion Matrix",
+      "ConfusionMatrixDisplay.from_estimator(",
+      "    dtc, X_test, y_test",
+      ")",
+      "plt.title(\"Decision Tree Confusion Matrix\")",
+      "plt.show()",
+      "",
+      "# Classification Report",
+      "print(classification_report(y_test, y_pred))",
+      "",
+      "# -------------------------------",
+      "# Random Forest Classifier",
+      "# -------------------------------",
+      "",
+      "rfc = RandomForestClassifier(",
+      "    n_estimators=100,",
+      "    random_state=42",
+      ")",
+      "",
+      "rfc.fit(X_train, y_train)",
+      "",
+      "# Test the Model",
+      "y_pred = rfc.predict(X_test)",
+      "",
+      "print(\"\\nRandom Forest Classification\")",
+      "print(\"Accuracy:\", accuracy_score(y_test, y_pred))",
+      "",
+      "# Plot Confusion Matrix",
+      "ConfusionMatrixDisplay.from_estimator(",
+      "    rfc, X_test, y_test",
+      ")",
+      "plt.title(\"Random Forest Confusion Matrix\")",
+      "plt.show()",
+      "",
+      "# Classification Report",
+      "print(classification_report(y_test, y_pred))"
+    ].join("\n")
+  },
+  {
+    id: "ml-5",
+    type: "code",
+    language: "python",
+    title: "Linear Regression on Advertising Dataset",
+    category: "Machine Learning",
+    description: "Standardize Advertising features, fit LinearRegression, evaluate R2 Score and MSE, plot actual vs predicted sales, and print coefficients.",
+    code: [
+      "# 1. Import Libraries",
+      "import matplotlib.pyplot as plt",
+      "import pandas as pd",
+      "import numpy as np",
+      "",
+      "from sklearn.model_selection import train_test_split",
+      "from sklearn.linear_model import LinearRegression",
+      "from sklearn.preprocessing import StandardScaler",
+      "from sklearn.metrics import mean_squared_error, r2_score",
+      "",
+      "# 2. Load Dataset",
+      "df = pd.read_csv(\"Advertising.csv\")",
+      "print(df.head())",
+      "",
+      "# 3. Drop Rows with Null Values",
+      "df.dropna(inplace=True, axis=0)",
+      "",
+      "# 4. Separate Target Variable",
+      "y = df['Sales']",
+      "",
+      "# 5. Separate Input Variables",
+      "X = df.drop('Sales', axis=1)",
+      "",
+      "# 6. Split Data into Training and Testing Sets",
+      "X_train, X_test, y_train, y_test = train_test_split(",
+      "    X, y,",
+      "    test_size=0.3,",
+      "    random_state=42",
+      ")",
+      "",
+      "print(\"Training Data:\")",
+      "print(X_train.head())",
+      "",
+      "# 7. Standardize the Values",
+      "scaler = StandardScaler()",
+      "",
+      "# 8. Fit Scaler on Training Data",
+      "scaler.fit(X_train)",
+      "",
+      "# 9. Transform Training and Testing Data",
+      "X_train = scaler.transform(X_train)",
+      "X_test = scaler.transform(X_test)",
+      "",
+      "# 10. Create Linear Regression Model",
+      "model = LinearRegression()",
+      "",
+      "# 11. Train the Model",
+      "model.fit(X_train, y_train)",
+      "",
+      "# 12. Predict Values Using Testing Data",
+      "y_pred = model.predict(X_test)",
+      "",
+      "# 13. Create DataFrame for Actual vs Predicted Values",
+      "y_df = pd.DataFrame({",
+      "    'y_test': y_test,",
+      "    'y_pred': y_pred",
+      "})",
+      "",
+      "print(y_df)",
+      "",
+      "# 14. Calculate R2 Score",
+      "print(\"R2 Score:\", r2_score(y_test, y_pred))",
+      "",
+      "# 15. Calculate Mean Squared Error",
+      "print(\"MSE:\", mean_squared_error(y_test, y_pred))",
+      "",
+      "# 16. Plot Actual vs Predicted Values",
+      "plt.scatter(y_test, y_pred)",
+      "plt.xlabel(\"Actual Values\")",
+      "plt.ylabel(\"Predicted Values\")",
+      "plt.title(\"Actual vs Predicted Values\")",
+      "plt.show()",
+      "",
+      "# 17. Display Model Coefficients",
+      "print(\"Coefficients:\", model.coef_)",
+      "",
+      "# 18. Display Model Intercept",
+      "print(\"Intercept:\", model.intercept_)"
+    ].join("\n")
+  },
+
+  // --- 1 DEEP LEARNING PYTHON SNIPPET ---
+  {
+    id: "dl-1",
+    type: "code",
+    language: "python",
+    title: "Keras Neural Network (MNIST Digit Classification)",
+    category: "Deep Learning",
+    description: "Train a Sequential neural network (Flatten + Dense 128/64/10) with Adam optimizer on MNIST handwritten digits.",
+    code: [
+      "import tensorflow as tf",
+      "from tensorflow.keras.models import Sequential",
+      "from tensorflow.keras.layers import Flatten, Dense",
+      "",
+      "(x_train, y_train), (x_test, y_test) =tf.keras.datasets.mnist.load_data()",
+      "x_train = x_train / 255.0",
+      "x_test = x_test / 255.0",
+      "",
+      "model = Sequential([",
+      "    Flatten(input_shape=(28, 28)),",
+      "    Dense(128, activation='relu'),",
+      "    Dense(64, activation='relu'),",
+      "    Dense(10, activation='softmax')",
+      "])",
+      "",
+      "model.compile(",
+      "    optimizer='adam',",
+      "    loss='sparse_categorical_crossentropy',",
+      "    metrics=['accuracy']",
+      ")",
+      "",
+      "history = model.fit(x_train, y_train, epochs=10)",
+      "",
+      "test_loss, test_accuracy = model.evaluate(",
+      "    x_test, y_test)",
+      "",
+      "print(\"Test Accuracy:\", test_accuracy)",
+      "",
+      "predictions = model.predict(x_test)",
+      "",
+      "import numpy as np",
+      "",
+      "predicted_class = np.argmax(predictions[0])",
+      "print(\"Predicted digit:\", predicted_class)",
+      "print(\"Actual digit:\", y_test[0])"
+    ].join("\n")
+  },
+
+  // --- 1 NLP PYTHON SNIPPET ---
+  {
+    id: "nlp-1",
+    type: "code",
+    language: "python",
+    title: "NLP Text Processing & Vectorization",
+    category: "NLP",
+    description: "Tokenization, stopword removal, POS tagging, Named Entity Recognition (ne_chunk), bigrams/trigrams, CountVectorizer, and TfidfVectorizer.",
+    code: [
+      "import nltk",
+      "from nltk.tokenize import word_tokenize",
+      "from nltk.corpus import stopwords, wordnet",
+      "from nltk.stem import WordNetLemmatizer",
+      "from nltk import pos_tag, ne_chunk",
+      "from nltk.util import ngrams",
+      "from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer",
+      "",
+      "nltk.download('punkt')",
+      "nltk.download('stopwords')",
+      "nltk.download('averaged_perceptron_tagger')",
+      "nltk.download('maxent_ne_chunker')",
+      "nltk.download('words')",
+      "nltk.download('wordnet')",
+      "nltk.download('omw-1.4')",
+      "nltk.download('punkt_tab')",
+      "nltk.download('averaged_perceptron_tagger_eng')",
+      "nltk.download('maxent_ne_chunker_tab')",
+      "nltk.download('wordnet_ic')",
+      "",
+      "text = \"Apple is looking at buying U.K. startup for $1 billion. The striped bats were hanging on their feet.\"",
+      "tokens = word_tokenize(text)",
+      "print(\"Tokens:\")",
+      "print(tokens)",
+      "print(\"\\n--------------------\\n\")",
+      "",
+      "stop_words = set(stopwords.words('english'))",
+      "filtered_tokens = [word for word in tokens if word.lower() not in stop_words]",
+      "print(\"After Stopword Removal:\")",
+      "print(filtered_tokens)",
+      "print(\"\\n--------------------\\n\")",
+      "",
+      "pos_tags = pos_tag(filtered_tokens)",
+      "print(\"POS Tags:\")",
+      "print(pos_tags)",
+      "print(\"\\n--------------------\\n\")",
+      "",
+      "ner_tree = ne_chunk(pos_tags)",
+      "print(\"Named Entities (Tree Format):\")",
+      "print(ner_tree)",
+      "print(\"\\n--------------------\\n\")",
+      "",
+      "bi_grams = list(ngrams(filtered_tokens, 2))",
+      "tri_grams = list(ngrams(filtered_tokens, 3))",
+      "print(\"Bigrams:\")",
+      "print(bi_grams)",
+      "print(\"\\nTrigrams:\")",
+      "print(tri_grams)",
+      "",
+      "corpus = [",
+      "    \"Apple is looking at buying U.K. startup for $1 billion.\",",
+      "    \"The striped bats were hanging on their feet.\"",
+      "]",
+      "vectorizer = CountVectorizer(stop_words='english')",
+      "bow_matrix = vectorizer.fit_transform(corpus)",
+      "",
+      "print(\"Bag of Words Feature Names:\")",
+      "print(vectorizer.get_feature_names_out())",
+      "print(\"\\nBag of Words Matrix:\")",
+      "print(bow_matrix.toarray())",
+      "print(\"\\n--------------------\\n\")",
+      "",
+      "tfidf_vectorizer = TfidfVectorizer(stop_words='english')",
+      "tfidf_matrix = tfidf_vectorizer.fit_transform(corpus)",
+      "",
+      "print(\"TF-IDF Feature Names:\")",
+      "print(tfidf_vectorizer.get_feature_names_out())",
+      "print(\"\\nTF-IDF Matrix:\")",
+      "print(tfidf_matrix.toarray())"
+    ].join("\n")
+  },
+
+  // --- 5 CSV DATASETS ---
+  {
+    id: "csv-1",
+    type: "csv",
+    filename: "titanic.csv",
+    usedIn: "Data Visualization (9 scripts)",
+    title: "titanic.csv",
+    category: "CSV Datasets",
+    description: "Passenger survival, class, sex, age, fare, deck, and alive sample records for Titanic data visualization.",
+    code: [
+      "passengerid,survived,pclass,sex,age,sibsp,parch,fare,class,deck,alive",
+      "1,0,3,male,22.0,1,0,7.25,Third,,no",
+      "2,1,1,female,38.0,1,0,71.2833,First,C,yes",
+      "3,1,3,female,26.0,0,0,7.925,Third,,yes",
+      "4,1,1,female,35.0,1,0,53.1,First,C,yes",
+      "5,0,3,male,35.0,0,0,8.05,Third,,no",
+      "6,0,3,male,28.0,0,0,8.4583,Third,,no",
+      "7,0,1,male,54.0,0,0,51.8625,First,E,no",
+      "8,0,3,male,2.0,3,1,21.075,Third,,no",
+      "9,1,3,female,27.0,0,2,11.1333,Third,,yes",
+      "10,1,2,female,14.0,1,0,30.0708,Second,,yes",
+      "11,1,3,female,4.0,1,1,16.7,Third,G,yes",
+      "12,1,1,female,58.0,0,0,26.55,First,C,yes",
+      "13,0,3,male,20.0,0,0,8.05,Third,,no",
+      "14,0,3,male,39.0,1,5,31.275,Third,,no",
+      "15,0,3,female,14.0,0,0,7.8542,Third,,no"
+    ].join("\n")
+  },
+  {
+    id: "csv-2",
+    type: "csv",
+    filename: "Mall_Customers.csv",
+    usedIn: "K-Means Clustering",
+    title: "Mall_Customers.csv",
+    category: "CSV Datasets",
+    description: "Customer demographics, Annual Income (k$), and Spending Score (1-100) for K-Means clustering.",
+    code: [
+      "CustomerID,Gender,Age,Annual Income (k$),Spending Score (1-100)",
+      "1,Male,19,15,39",
+      "2,Male,21,15,81",
+      "3,Female,20,16,6",
+      "4,Female,23,16,77",
+      "5,Female,31,17,40",
+      "6,Female,22,17,76",
+      "7,Female,35,18,6",
+      "8,Female,23,18,94",
+      "9,Male,64,19,3",
+      "10,Female,30,19,72",
+      "11,Male,67,19,14",
+      "12,Female,35,19,99",
+      "13,Female,58,20,15",
+      "14,Female,24,20,77",
+      "15,Male,37,20,13"
+    ].join("\n")
+  },
+  {
+    id: "csv-3",
+    type: "csv",
+    filename: "apples_and_oranges.csv",
+    usedIn: "SVM Classifier",
+    title: "apples_and_oranges.csv",
+    category: "CSV Datasets",
+    description: "Fruit Weight, Size, and Class labels (apple vs orange) for Support Vector Machine classification.",
+    code: [
+      "Weight,Size,Class",
+      "69,4.39,orange",
+      "69,4.21,orange",
+      "65,4.09,orange",
+      "72,5.85,apple",
+      "67,4.7,orange",
+      "73,5.68,apple",
+      "70,5.56,apple",
+      "75,5.11,apple",
+      "74,5.36,apple",
+      "65,4.27,orange",
+      "73,5.79,apple",
+      "70,5.47,apple",
+      "74,5.53,apple",
+      "68,4.47,orange",
+      "74,5.22,apple"
+    ].join("\n")
+  },
+  {
+    id: "csv-4",
+    type: "csv",
+    filename: "dataset_Fish.csv",
+    usedIn: "Logistic Regression",
+    title: "dataset_Fish.csv",
+    category: "CSV Datasets",
+    description: "Fish species measurements (Weight, Length1, Length2, Length3, Height, Width) for Logistic Regression.",
+    code: [
+      "Species,Weight,Length1,Length2,Length3,Height,Width",
+      "Bream,242,23.2,25.4,30.0,11.52,4.02",
+      "Bream,290,24.0,26.3,31.2,12.48,4.3056",
+      "Bream,340,23.9,26.5,31.1,12.3778,4.6961",
+      "Roach,40,12.9,14.1,16.2,4.1472,2.268",
+      "Roach,69,16.5,18.2,20.3,5.2983,2.8217",
+      "Roach,78,17.5,18.8,21.2,5.5756,2.9044",
+      "Perch,5.9,7.5,8.4,8.8,2.112,1.408",
+      "Perch,32,12.5,13.7,14.7,3.528,1.9992",
+      "Perch,40,13.8,15.0,16.0,3.824,2.432",
+      "Pike,200,30.0,32.3,34.8,5.568,3.3756",
+      "Pike,300,31.7,34.0,37.8,5.7078,4.158",
+      "Pike,300,32.7,35.0,38.8,5.9364,4.3844",
+      "Smelt,6.7,9.3,9.8,10.8,1.7388,1.0476",
+      "Smelt,7.5,10.0,10.5,11.6,1.972,1.16",
+      "Smelt,7.0,10.1,10.6,11.6,1.7284,1.1484"
+    ].join("\n")
+  },
+  {
+    id: "csv-5",
+    type: "csv",
+    filename: "Advertising.csv",
+    usedIn: "Linear Regression (Advertising)",
+    title: "Advertising.csv",
+    category: "CSV Datasets",
+    description: "TV, Radio, and Newspaper advertising spend paired with Sales for Linear Regression.",
+    code: [
+      "TV,Radio,Newspaper,Sales",
+      "230.1,37.8,69.2,22.1",
+      "44.5,39.3,45.1,10.4",
+      "17.2,45.9,69.3,9.3",
+      "151.5,41.3,58.5,18.5",
+      "180.8,10.8,58.4,12.9",
+      "8.7,48.9,75.0,7.2",
+      "57.5,32.8,23.5,11.8",
+      "120.2,19.6,11.6,13.2",
+      "8.6,2.1,1.0,4.8",
+      "199.8,2.6,21.2,10.6",
+      "66.1,5.8,24.2,8.6",
+      "214.7,24.0,4.0,17.4",
+      "23.8,35.1,65.9,9.2",
+      "97.5,7.6,7.2,9.7",
+      "204.1,32.9,46.0,19.0"
+    ].join("\n")
+  },
+
+  // --- 3 GIT & DOCKER CLI COMMAND GUIDES ---
+  {
+    id: "cli-1",
+    type: "command",
+    language: "bash",
+    title: "Google Cloud Shell \u2014 Python Docker Container Setup",
+    category: "Git & Docker",
+    description: "Step-by-step Google Cloud Shell commands to create app.py, write a Python 3.11 Dockerfile, build mypython-app, and run mycontainer.",
+    code: [
+      "# 1. Create and enter project directory",
+      "mkdir mydockerapp",
+      "cd mydockerapp",
+      "pwd",
+      "",
+      "# 2. Create app.py (nano app.py)",
+      "print(\"Hello from my Docker Container\")",
+      "ls",
+      "",
+      "# 3. Create Dockerfile (nano Dockerfile)",
+      "FROM python:3.11",
+      "WORKDIR /app",
+      "COPY app.py .",
+      "CMD [\"python\", \"app.py\"]",
+      "ls",
+      "",
+      "# 4. Make sure you are in mydockerapp directory, then build & run",
+      "pwd",
+      "docker build -t mypython-app .",
+      "docker images",
+      "docker run --name mycontainer mypython-app",
+      "docker ps -a"
+    ].join("\n")
+  },
+  {
+    id: "cli-2",
+    type: "command",
+    language: "bash",
+    title: "Basic Local Git Operations",
+    category: "Git & Docker",
+    description: "Essential Git commands for configuration, starting a repository, staging files, committing, pushing/pulling remotes, and branching.",
+    code: [
+      "# Git: configurations",
+      "git config --global user.name \"FirstName LastName\"",
+      "git config --global user.email \"your-email@email-provider.com\"",
+      "git config --global color.ui true",
+      "git config --list",
+      "",
+      "# Git: starting a repository",
+      "git init",
+      "git status",
+      "",
+      "# Git: staging files",
+      "git add <file-name>",
+      "git add <file-name> <another-file-name> <yet-another-file-name>",
+      "git add .",
+      "git add --all",
+      "git add -A",
+      "git rm --cached <file-name>",
+      "git reset <file-name>",
+      "",
+      "# Git: committing to a repository",
+      "git commit -m \"Add three files\"",
+      "git reset --soft HEAD^",
+      "git commit --amend -m <enter your message>",
+      "",
+      "# Git: pulling and pushing from and to repositories",
+      "git remote add origin <link>",
+      "git push -u origin master",
+      "git clone <clone>",
+      "git pull",
+      "",
+      "# Git: branching",
+      "git branch",
+      "git branch <branch-name>",
+      "git checkout <branch-name>",
+      "git merge <branch-name>",
+      "git checkout -b <branch-name>"
+    ].join("\n")
+  },
+  {
+    id: "cli-3",
+    type: "command",
+    language: "bash",
+    title: "Basic Docker Commands Reference",
+    category: "Git & Docker",
+    description: "Core Docker CLI commands to run, list, stop, and remove containers and images, plus Docker Compose.",
+    code: [
+      "# Runs a container from an image (Ex: docker run ubuntu)",
+      "docker run <image>",
+      "",
+      "# Lists running containers (Ex: docker ps)",
+      "docker ps",
+      "",
+      "# Lists all containers including stopped ones (Ex: docker ps -a)",
+      "docker ps -a",
+      "",
+      "# Lists downloaded images (Ex: docker images)",
+      "docker images",
+      "",
+      "# Stops a running container (Ex: docker stop mywebserver)",
+      "docker stop <container_id>",
+      "",
+      "# Removes a container (Ex: docker rm mywebserver)",
+      "docker rm <container_id>",
+      "",
+      "# Removes an image (Ex: docker rmi ubuntu)",
+      "docker rmi <image_id>",
+      "",
+      "# Define and manage multi-container Docker applications using docker-compose.yml",
+      "docker-compose up"
+    ].join("\n")
+  }
+];
+
+var STORAGE_KEY = "codevault_selfcontained_v1";
+var snippets = [];
+var activeCategory = "All";
+var searchQuery = "";
+var expandedIds = {};
+var rawCsvIds = {};
+var modalEntryType = "code";
+var resetConfirmArmed = false;
+
+var CATEGORY_ORDER = [
+  "All",
+  "Data Visualization",
+  "Data Preprocessing",
+  "Machine Learning",
+  "Deep Learning",
+  "NLP",
+  "Git & Docker",
+  "CSV Datasets"
+];
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// Lightweight Built-in Regex Syntax Highlighter (100% offline, zero external dependencies)
+function highlightCode(code, lang) {
+  var escaped = escapeHtml(code);
+  var placeholders = [];
+
+  function saveToken(html) {
+    var idx = placeholders.length;
+    placeholders.push(html);
+    return "\u0000TOK" + idx + "\u0000";
+  }
+
+  // 1. Extract strings first so keywords inside strings are not colored
+  escaped = escaped.replace(/(&quot;(?:\\.|(?!&quot;)[^\\\n])*&quot;|&#039;(?:\\.|(?!&#039;)[^\\\n])*&#039;)/g, function(m) {
+    return saveToken('<span class="tok-string">' + m + '</span>');
+  });
+
+  // 2. Extract # comments
+  escaped = escaped.replace(/(#[^\n]*)/g, function(m) {
+    return saveToken('<span class="tok-comment">' + m + '</span>');
+  });
+
+  if (lang === "bash") {
+    // CLI Commands & Docker/Git keywords
+    escaped = escaped.replace(/\b(git|docker|docker-compose|mkdir|cd|pwd|nano|ls|FROM|WORKDIR|COPY|CMD|python)\b/g, '<span class="tok-cmd">$1</span>');
+    escaped = escaped.replace(/(\s)(--?[a-zA-Z0-9_-]+)/g, '$1<span class="tok-flag">$2</span>');
+  } else {
+    // Python keywords
+    escaped = escaped.replace(/\b(import|from|as|for|in|range|if|else|elif|def|return|True|False|None|and|or|not|with|try|except)\b/g, '<span class="tok-keyword">$1</span>');
+    // Common Python / Data Science builtins
+    escaped = escaped.replace(/\b(print|len|list|set|float|int|str|type|plt|pd|np|sns|tf|nltk)\b/g, '<span class="tok-builtin">$1</span>');
+    // Numbers
+    escaped = escaped.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="tok-number">$1</span>');
+  }
+
+  // Restore protected string and comment tokens
+  escaped = escaped.replace(/\u0000TOK(\d+)\u0000/g, function(_, idx) {
+    return placeholders[Number(idx)];
+  });
+
+  return escaped;
+}
+
+function getBadgeClass(category) {
+  if (category === "Data Visualization") return "badge-viz";
+  if (category === "Data Preprocessing") return "badge-prep";
+  if (category === "Machine Learning") return "badge-ml";
+  if (category === "Deep Learning") return "badge-dl";
+  if (category === "NLP") return "badge-nlp";
+  if (category === "Git & Docker") return "badge-cli";
+  if (category === "CSV Datasets") return "badge-csv";
+  return "badge-default";
+}
+
+function parseCsvRows(csvText) {
+  var lines = csvText.trim().split(/\r?\n/).filter(function(l) {
+    return l.trim().length > 0;
+  });
+  return lines.map(function(line) {
+    var cells = [];
+    var current = "";
+    var inQuotes = false;
+    for (var i = 0; i < line.length; i++) {
+      var ch = line.charAt(i);
+      if (ch === '"') {
+        inQuotes = !inQuotes;
+      } else if (ch === "," && !inQuotes) {
+        cells.push(current.trim());
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+    cells.push(current.trim());
+    return cells;
+  });
+}
+
+function loadSnippets() {
+  var saved = SafeStore.get(STORAGE_KEY);
+  if (saved) {
+    try {
+      var parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        snippets = parsed;
+        return;
+      }
+    } catch (e) {}
+  }
+  snippets = DEFAULT_SNIPPETS.slice();
+  saveSnippets();
+}
+
+function saveSnippets() {
+  try {
+    SafeStore.set(STORAGE_KEY, JSON.stringify(snippets));
+  } catch (e) {}
+}
+
+function renderFilterPills() {
+  var container = document.getElementById("filter-pills");
+  var counts = { All: snippets.length };
+  var extraCats = [];
+
+  for (var i = 0; i < snippets.length; i++) {
+    var cat = snippets[i].category;
+    counts[cat] = (counts[cat] || 0) + 1;
+    if (CATEGORY_ORDER.indexOf(cat) === -1 && extraCats.indexOf(cat) === -1) {
+      extraCats.push(cat);
+    }
+  }
+
+  var cats = CATEGORY_ORDER.concat(extraCats);
+  container.innerHTML = cats.map(function(cat) {
+    var count = counts[cat] || 0;
+    var activeClass = (activeCategory === cat) ? " active" : "";
+    return '<button type="button" class="pill' + activeClass + '" data-cat="' + escapeHtml(cat) + '" onclick="selectCategory(\'' + escapeHtml(cat).replace(/'/g, "\\'") + '\')">' +
+      '<span>' + escapeHtml(cat) + '</span>' +
+      '<span class="pill-count">' + count + '</span>' +
+      '</button>';
+  }).join("");
+}
+
+function selectCategory(cat) {
+  activeCategory = cat;
+  renderFilterPills();
+  renderSnippets();
+}
+
+function renderSnippets() {
+  var grid = document.getElementById("snippets-grid");
+  var emptyState = document.getElementById("empty-state");
+  var countEl = document.getElementById("snippet-count");
+  var q = searchQuery.toLowerCase().trim();
+
+  var filtered = snippets.filter(function(item) {
+    var catMatch = (activeCategory === "All" || item.category === activeCategory);
+    if (!catMatch) return false;
+    if (!q) return true;
+    return (
+      item.title.toLowerCase().indexOf(q) !== -1 ||
+      item.category.toLowerCase().indexOf(q) !== -1 ||
+      item.description.toLowerCase().indexOf(q) !== -1 ||
+      (item.filename && item.filename.toLowerCase().indexOf(q) !== -1) ||
+      (item.usedIn && item.usedIn.toLowerCase().indexOf(q) !== -1) ||
+      item.code.toLowerCase().indexOf(q) !== -1
+    );
+  });
+
+  countEl.textContent = "Showing " + filtered.length + " of " + snippets.length + " items";
+
+  if (filtered.length === 0) {
+    grid.innerHTML = "";
+    emptyState.classList.add("visible");
+    return;
+  }
+
+  emptyState.classList.remove("visible");
+
+  grid.innerHTML = filtered.map(function(item) {
+    var isCsv = (item.type === "csv" || item.category === "CSV Datasets");
+    var badgeCls = getBadgeClass(item.category);
+    var lines = item.code.trim().split("\n");
+    var isExpanded = !!expandedIds[item.id];
+
+    if (isCsv) {
+      var rows = parseCsvRows(item.code);
+      var headers = rows[0] || [];
+      var dataRows = rows.slice(1);
+      var isRaw = !!rawCsvIds[item.id];
+      var isLongCsv = dataRows.length > 7;
+      var shownRows = isExpanded ? dataRows : dataRows.slice(0, 7);
+      var fname = item.filename || (item.title.toLowerCase().replace(/[^a-z0-9]+/g, "_") + ".csv");
+
+      var bodyHtml = "";
+      if (!isRaw) {
+        var thHtml = headers.map(function(h) {
+          return "<th>" + escapeHtml(h) + "</th>";
+        }).join("");
+        var trHtml = shownRows.map(function(r) {
+          var tds = headers.map(function(_, idx) {
+            var val = (r[idx] !== undefined && r[idx] !== "") ? r[idx] : "\u2014";
+            return "<td>" + escapeHtml(val) + "</td>";
+          }).join("");
+          return "<tr>" + tds + "</tr>";
+        }).join("");
+        bodyHtml = '<div class="table-wrapper"><table class="csv-table"><thead><tr>' + thHtml + '</tr></thead><tbody>' + trHtml + '</tbody></table></div>';
+      } else {
+        var lineNums = lines.map(function(_, idx) { return "<span>" + (idx + 1) + "</span>"; }).join("");
+        bodyHtml = '<div class="code-wrapper' + (isExpanded ? " expanded" : "") + '">' +
+          '<div class="line-numbers">' + lineNums + '</div>' +
+          '<pre class="code-block" style="color:#a7f3d0;">' + escapeHtml(item.code) + '</pre>' +
+          '</div>';
+      }
+
+      var expandBtn = isLongCsv
+        ? '<button type="button" class="expand-bar csv-expand" onclick="toggleExpand(\'' + item.id + '\')">' +
+          (isExpanded ? "Show fewer rows \u25B2" : "Show all " + dataRows.length + " rows \u25BC") +
+          '</button>'
+        : "";
+
+      return '<article class="card csv-card">' +
+        '<div class="card-header">' +
+          '<div>' +
+            '<div class="card-meta">' +
+              '<span class="badge ' + badgeCls + '"><span class="badge-dot"></span>' + escapeHtml(item.category) + '</span>' +
+              '<span class="meta-info" style="color:#6ee7b7;">' + escapeHtml(fname) + '</span>' +
+              '<span class="meta-info">' + dataRows.length + ' rows &times; ' + headers.length + ' cols</span>' +
+            '</div>' +
+            '<h2 class="card-title">' + escapeHtml(item.title) + '</h2>' +
+            '<p class="card-desc">' + escapeHtml(item.description) + '</p>' +
+            (item.usedIn ? '<span class="used-in-tag">Used in: ' + escapeHtml(item.usedIn) + '</span>' : '') +
+          '</div>' +
+          '<button type="button" class="delete-icon-btn" onclick="deleteItem(\'' + item.id + '\')" title="Remove">&#128465;</button>' +
+        '</div>' +
+        '<div class="card-toolbar">' +
+          '<div class="toggle-group">' +
+            '<button type="button" class="toggle-btn' + (!isRaw ? " active" : "") + '" onclick="setCsvView(\'' + item.id + '\', \'table\')">Table View</button>' +
+            '<button type="button" class="toggle-btn' + (isRaw ? " active" : "") + '" onclick="setCsvView(\'' + item.id + '\', \'raw\')">Raw CSV</button>' +
+          '</div>' +
+          '<div class="toolbar-actions">' +
+            '<button type="button" class="btn btn-secondary btn-sm" onclick="copyItem(\'' + item.id + '\', this)">Copy CSV</button>' +
+            '<button type="button" class="btn btn-emerald btn-sm" onclick="downloadCsv(\'' + item.id + '\')">Download .csv</button>' +
+          '</div>' +
+        '</div>' +
+        bodyHtml +
+        expandBtn +
+      '</article>';
+    }
+
+    // Code or Shell/CLI Command Card
+    var isCli = (item.language === "bash" || item.type === "command" || item.category === "Git & Docker");
+    var langLabel = isCli ? "Shell / CLI" : "Python";
+    var isLong = lines.length > 14;
+    var lineNumbersHtml = lines.map(function(_, idx) {
+      return "<span>" + (idx + 1) + "</span>";
+    }).join("");
+    var highlighted = highlightCode(item.code, isCli ? "bash" : "python");
+
+    var expandHtml = (isLong && !isExpanded)
+      ? '<button type="button" class="expand-bar" onclick="toggleExpand(\'' + item.id + '\')">Show all ' + lines.length + ' lines \u25BC</button>'
+      : (isLong && isExpanded
+          ? '<button type="button" class="expand-bar" onclick="toggleExpand(\'' + item.id + '\')">Collapse code \u25B2</button>'
+          : "");
+
+    return '<article class="card">' +
+      '<div class="card-header">' +
+        '<div>' +
+          '<div class="card-meta">' +
+            '<span class="badge ' + badgeCls + '"><span class="badge-dot"></span>' + escapeHtml(item.category) + '</span>' +
+            '<span class="meta-info">' + langLabel + ' &bull; ' + lines.length + ' lines</span>' +
+          '</div>' +
+          '<h2 class="card-title">' + escapeHtml(item.title) + '</h2>' +
+          '<p class="card-desc">' + escapeHtml(item.description) + '</p>' +
+        '</div>' +
+        '<button type="button" class="delete-icon-btn" onclick="deleteItem(\'' + item.id + '\')" title="Remove">&#128465;</button>' +
+      '</div>' +
+      '<div class="card-toolbar">' +
+        '<div class="window-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>' +
+        '<div class="toolbar-actions">' +
+          (isLong ? '<button type="button" class="btn btn-secondary btn-sm" onclick="toggleExpand(\'' + item.id + '\')">' + (isExpanded ? "Collapse" : "Expand") + '</button>' : '') +
+          '<button type="button" class="btn btn-copy" onclick="copyItem(\'' + item.id + '\', this)">Copy Code</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="code-wrapper' + (isExpanded ? " expanded" : "") + '">' +
+        '<div class="line-numbers">' + lineNumbersHtml + '</div>' +
+        '<pre class="code-block"><code>' + highlighted + '</code></pre>' +
+      '</div>' +
+      expandHtml +
+    '</article>';
+  }).join("");
+}
+
+function toggleExpand(id) {
+  expandedIds[id] = !expandedIds[id];
+  renderSnippets();
+}
+
+function setCsvView(id, mode) {
+  if (mode === "raw") {
+    rawCsvIds[id] = true;
+  } else {
+    delete rawCsvIds[id];
+  }
+  renderSnippets();
+}
+
+// Universal Copy Function (works on HTTP, HTTPS, file://, and Android viewers)
+function copyTextUniversal(text) {
+  var fallback = document.getElementById("clipboard-fallback");
+  fallback.value = text;
+  fallback.select();
+  fallback.setSelectionRange(0, 999999);
+  var ok = false;
+  try {
+    ok = document.execCommand("copy");
+  } catch (e) {}
+  if (!ok && navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      navigator.clipboard.writeText(text);
+    } catch (e) {}
+  }
+}
+
+function copyItem(id, btn) {
+  var found = null;
+  for (var i = 0; i < snippets.length; i++) {
+    if (snippets[i].id === id) {
+      found = snippets[i];
+      break;
+    }
+  }
+  if (!found) return;
+
+  copyTextUniversal(found.code);
+  var origText = btn.textContent;
+  btn.textContent = "\u2713 Copied!";
+  btn.classList.add("copied");
+  showToast("Copied \"" + found.title + "\" to clipboard");
+
+  setTimeout(function() {
+    btn.textContent = origText;
+    btn.classList.remove("copied");
+  }, 1800);
+}
+
+function downloadCsv(id) {
+  var found = null;
+  for (var i = 0; i < snippets.length; i++) {
+    if (snippets[i].id === id) {
+      found = snippets[i];
+      break;
+    }
+  }
+  if (!found) return;
+
+  var filename = (found.filename || found.title.toLowerCase().replace(/[^a-z0-9]+/g, "_")).trim();
+  if (filename.toLowerCase().slice(-4) !== ".csv") {
+    filename += ".csv";
+  }
+
+  var blob = new Blob([found.code], { type: "text/csv;charset=utf-8;" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("Downloading " + filename);
+}
+
+function deleteItem(id) {
+  snippets = snippets.filter(function(s) { return s.id !== id; });
+  saveSnippets();
+  renderFilterPills();
+  renderSnippets();
+  showToast("Item removed");
+}
+
+function clearSearch() {
+  var inp = document.getElementById("search-input");
+  inp.value = "";
+  searchQuery = "";
+  document.getElementById("clear-search-btn").style.display = "none";
+  renderSnippets();
+}
+
+function resetFilters() {
+  clearSearch();
+  selectCategory("All");
+}
+
+// Modal Controls
+function setModalType(type) {
+  modalEntryType = type;
+  var btnCode = document.getElementById("type-btn-code");
+  var btnCsv = document.getElementById("type-btn-csv");
+  var csvBox = document.getElementById("csv-upload-box");
+  var catInput = document.getElementById("input-category");
+  var saveBtn = document.getElementById("save-item-btn");
+
+  if (type === "csv") {
+    btnCsv.className = "type-choice selected-csv";
+    btnCode.className = "type-choice";
+    csvBox.classList.add("visible");
+    catInput.value = "CSV Datasets";
+    saveBtn.textContent = "Save CSV Dataset";
+  } else {
+    btnCode.className = "type-choice selected-code";
+    btnCsv.className = "type-choice";
+    csvBox.classList.remove("visible");
+    if (catInput.value === "CSV Datasets") {
+      catInput.value = "Machine Learning";
+    }
+    saveBtn.textContent = "Save Snippet";
+  }
+}
+
+function openAddModal() {
+  document.getElementById("add-modal").classList.add("open");
+  if (activeCategory === "CSV Datasets") {
+    setModalType("csv");
+  }
+}
+
+function closeAddModal() {
+  document.getElementById("add-modal").classList.remove("open");
+}
+
+function openManageModal() {
+  document.getElementById("export-json-area").value = JSON.stringify(snippets, null, 2);
+  resetConfirmArmed = false;
+  document.getElementById("reset-label").textContent = "Reset Defaults";
+  document.getElementById("manage-modal").classList.add("open");
+}
+
+function closeManageModal() {
+  document.getElementById("manage-modal").classList.remove("open");
+}
+
+function copyJsonBackup() {
+  copyTextUniversal(document.getElementById("export-json-area").value);
+  showToast("JSON copied to clipboard");
+}
+
+function downloadJsonBackup() {
+  var jsonStr = document.getElementById("export-json-area").value;
+  var blob = new Blob([jsonStr], { type: "application/json" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "codevault-backup.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("Downloaded codevault-backup.json");
+}
+
+function handleResetDefaults() {
+  var label = document.getElementById("reset-label");
+  if (!resetConfirmArmed) {
+    resetConfirmArmed = true;
+    label.textContent = "Tap again to confirm";
+    setTimeout(function() {
+      resetConfirmArmed = false;
+      label.textContent = "Reset Defaults";
+    }, 3500);
+    return;
+  }
+  snippets = DEFAULT_SNIPPETS.slice();
+  expandedIds = {};
+  rawCsvIds = {};
+  saveSnippets();
+  renderFilterPills();
+  renderSnippets();
+  document.getElementById("export-json-area").value = JSON.stringify(snippets, null, 2);
+  resetConfirmArmed = false;
+  label.textContent = "Reset Defaults";
+  showToast("Restored all 27 default items");
+}
+
+function showToast(msg) {
+  var container = document.getElementById("toast-container");
+  var div = document.createElement("div");
+  div.className = "toast";
+  div.textContent = "\u2713 " + msg;
+  container.appendChild(div);
+  setTimeout(function() {
+    if (div.parentNode) div.parentNode.removeChild(div);
+  }, 2400);
+}
+
+// Event Wiring
+document.addEventListener("DOMContentLoaded", function() {
+  loadSnippets();
+  renderFilterPills();
+  renderSnippets();
+
+  var searchInput = document.getElementById("search-input");
+  var clearBtn = document.getElementById("clear-search-btn");
+  searchInput.addEventListener("input", function(e) {
+    searchQuery = e.target.value;
+    clearBtn.style.display = searchQuery ? "block" : "none";
+    renderSnippets();
+  });
+
+  document.getElementById("csv-file-input").addEventListener("change", function(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var text = String(ev.target.result || "").replace(/\r\n/g, "\n").trim();
+      document.getElementById("input-filename").value = file.name;
+      if (!document.getElementById("input-title").value.trim()) {
+        document.getElementById("input-title").value = file.name;
+      }
+      document.getElementById("input-code").value = text;
+      showToast("Loaded " + file.name);
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById("add-snippet-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    var title = document.getElementById("input-title").value.trim();
+    var category = document.getElementById("input-category").value.trim() || "Machine Learning";
+    var description = document.getElementById("input-desc").value.trim();
+    var code = document.getElementById("input-code").value.replace(/\r\n/g, "\n");
+    if (!title || !description || !code) return;
+
+    var isCsv = (modalEntryType === "csv" || category === "CSV Datasets");
+    var isCli = (!isCsv && category === "Git & Docker");
+
+    var newItem = {
+      id: (isCsv ? "csv-" : (isCli ? "cli-" : "snip-")) + Date.now(),
+      type: isCsv ? "csv" : (isCli ? "command" : "code"),
+      language: isCli ? "bash" : (isCsv ? "csv" : "python"),
+      title: title,
+      category: category,
+      description: description,
+      code: code
+    };
+
+    if (isCsv) {
+      var fn = document.getElementById("input-filename").value.trim() || (title.toLowerCase().replace(/[^a-z0-9]+/g, "_") + ".csv");
+      if (fn.toLowerCase().slice(-4) !== ".csv") fn += ".csv";
+      newItem.filename = fn;
+      var used = document.getElementById("input-used-in").value.trim();
+      if (used) newItem.usedIn = used;
+    }
+
+    snippets.unshift(newItem);
+    saveSnippets();
+    renderFilterPills();
+    renderSnippets();
+    closeAddModal();
+    e.target.reset();
+    setModalType("code");
+    showToast("Added \"" + title + "\"");
+  });
+
+  // Tab key support inside textarea
+  document.getElementById("input-code").addEventListener("keydown", function(e) {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      var s = this.selectionStart;
+      var end = this.selectionEnd;
+      this.value = this.value.substring(0, s) + "    " + this.value.substring(end);
+      this.selectionStart = this.selectionEnd = s + 4;
+    }
+  });
+
+  // Backdrop click close
+  document.getElementById("add-modal").addEventListener("click", function(e) {
+    if (e.target.id === "add-modal") closeAddModal();
+  });
+  document.getElementById("manage-modal").addEventListener("click", function(e) {
+    if (e.target.id === "manage-modal") closeManageModal();
+  });
+});
+</script>
+</body>
+</html>
