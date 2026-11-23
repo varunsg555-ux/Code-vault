@@ -1,0 +1,2489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeVault — Developer Code, CSV &amp; CLI Hub</title>
+<style>
+  :root {
+    --bg-main: #0d1117;
+    --bg-card: #161b22;
+    --bg-elevated: #1f242c;
+    --bg-input: #090c10;
+    --border: #30363d;
+    --border-hover: #484f58;
+    --text-primary: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #6e7681;
+    --blue: #58a6ff;
+    --emerald: #3fb950;
+    --purple: #bc8cff;
+    --amber: #d29922;
+    --rose: #f85149;
+    --cyan: #39c5cf;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  /* Header */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background-color: rgba(13, 17, 23, 0.94);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #1f6feb, #8957e5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 800;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(31, 111, 235, 0.3);
+  }
+
+  .brand-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+  }
+
+  .brand-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: all 0.16s ease;
+    text-decoration: none;
+    user-select: none;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  .btn-primary {
+    background-color: #238636;
+    border-color: rgba(240, 246, 252, 0.1);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    background-color: #2ea043;
+  }
+
+  .btn-secondary {
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+  }
+
+  .btn-secondary:hover {
+    background-color: #282e37;
+    border-color: var(--border-hover);
+  }
+
+  .btn-sm {
+    padding: 6px 11px;
+    font-size: 0.76rem;
+    border-radius: 7px;
+  }
+
+  .btn-copy {
+    background-color: rgba(88, 166, 255, 0.12);
+    border-color: rgba(88, 166, 255, 0.35);
+    color: var(--blue);
+  }
+
+  .btn-copy:hover {
+    background-color: rgba(88, 166, 255, 0.22);
+  }
+
+  .btn-copy.copied {
+    background-color: rgba(63, 185, 80, 0.18);
+    border-color: rgba(63, 185, 80, 0.45);
+    color: var(--emerald);
+  }
+
+  .btn-download {
+    background-color: rgba(57, 197, 207, 0.12);
+    border-color: rgba(57, 197, 207, 0.35);
+    color: var(--cyan);
+  }
+
+  .btn-download:hover {
+    background-color: rgba(57, 197, 207, 0.22);
+  }
+
+  .btn-danger {
+    background-color: rgba(248, 81, 73, 0.14);
+    border-color: rgba(248, 81, 73, 0.4);
+    color: #ff7b72;
+  }
+
+  .btn-danger:hover {
+    background-color: rgba(248, 81, 73, 0.24);
+  }
+
+  /* Controls & Search */
+  .controls-section {
+    padding: 18px 0 12px;
+  }
+
+  .search-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 240px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 10px 36px 10px 38px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .search-input:focus {
+    border-color: var(--blue);
+  }
+
+  .clear-search {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 1rem;
+    display: none;
+    padding: 4px;
+  }
+
+  .count-pill {
+    padding: 8px 14px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* Category Filter Pills */
+  .category-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+  }
+
+  .category-bar::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  .category-bar::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 99px;
+  }
+
+  .cat-pill {
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background-color: var(--bg-card);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+
+  .cat-pill:hover {
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+  }
+
+  .cat-pill.active {
+    background-color: var(--blue);
+    border-color: var(--blue);
+    color: #0d1117;
+  }
+
+  /* Snippet Cards Grid */
+  main {
+    flex: 1;
+    padding: 10px 0 40px;
+  }
+
+  .cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    transition: border-color 0.2s ease;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+  }
+
+  .card-header {
+    padding: 14px 16px;
+    background-color: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .card-meta {
+    flex: 1;
+    min-width: 220px;
+  }
+
+  .badges-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    border: 1px solid transparent;
+  }
+
+  .badge-dv {
+    background-color: rgba(88, 166, 255, 0.14);
+    color: var(--blue);
+    border-color: rgba(88, 166, 255, 0.3);
+  }
+
+  .badge-dp {
+    background-color: rgba(210, 153, 34, 0.14);
+    color: var(--amber);
+    border-color: rgba(210, 153, 34, 0.3);
+  }
+
+  .badge-ml {
+    background-color: rgba(63, 185, 80, 0.14);
+    color: var(--emerald);
+    border-color: rgba(63, 185, 80, 0.3);
+  }
+
+  .badge-dl {
+    background-color: rgba(188, 140, 255, 0.14);
+    color: var(--purple);
+    border-color: rgba(188, 140, 255, 0.3);
+  }
+
+  .badge-nlp {
+    background-color: rgba(248, 81, 73, 0.14);
+    color: #ff7b72;
+    border-color: rgba(248, 81, 73, 0.3);
+  }
+
+  .badge-csv {
+    background-color: rgba(57, 197, 207, 0.14);
+    color: var(--cyan);
+    border-color: rgba(57, 197, 207, 0.3);
+  }
+
+  .badge-cli {
+    background-color: rgba(230, 237, 243, 0.12);
+    color: #f0f6fc;
+    border-color: rgba(230, 237, 243, 0.28);
+  }
+
+  .badge-lines {
+    background-color: rgba(139, 148, 158, 0.12);
+    color: var(--text-muted);
+    border-color: var(--border);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  .card-title {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 4px;
+  }
+
+  .card-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  .card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Code Container */
+  .code-wrapper {
+    position: relative;
+    background-color: var(--bg-input);
+    overflow-x: auto;
+  }
+
+  .code-wrapper.collapsed {
+    max-height: 330px;
+    overflow-y: hidden;
+  }
+
+  .code-wrapper.collapsed::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 48px;
+    background: linear-gradient(to bottom, rgba(9, 12, 16, 0), rgba(9, 12, 16, 0.96));
+    pointer-events: none;
+  }
+
+  .code-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  .code-table td {
+    padding: 0 12px;
+    vertical-align: top;
+  }
+
+  .code-table tr:first-child td {
+    padding-top: 12px;
+  }
+
+  .code-table tr:last-child td {
+    padding-bottom: 12px;
+  }
+
+  .line-num {
+    width: 44px;
+    min-width: 44px;
+    text-align: right;
+    color: var(--text-dim);
+    user-select: none;
+    border-right: 1px solid #1e242c;
+    padding-right: 10px !important;
+  }
+
+  .line-code {
+    white-space: pre;
+    color: #e6edf3;
+    padding-left: 14px !important;
+  }
+
+  /* Syntax Highlighting Colors */
+  .tok-kw {
+    color: #ff7b72;
+    font-weight: 600;
+  }
+
+  .tok-str {
+    color: #a5d6ff;
+  }
+
+  .tok-com {
+    color: #8b949e;
+    font-style: italic;
+  }
+
+  .tok-num {
+    color: #79c0ff;
+  }
+
+  .tok-fn {
+    color: #d2a8ff;
+  }
+
+  .tok-cmd {
+    color: #7ee787;
+    font-weight: 600;
+  }
+
+  .tok-flag {
+    color: #79c0ff;
+  }
+
+  /* CSV Table Preview */
+  .csv-table-wrap {
+    overflow-x: auto;
+    background-color: var(--bg-input);
+    max-height: 360px;
+  }
+
+  .csv-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  .csv-data-table th {
+    position: sticky;
+    top: 0;
+    background-color: #161b22;
+    color: var(--cyan);
+    text-align: left;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid #1f242c;
+    white-space: nowrap;
+  }
+
+  .csv-data-table td {
+    padding: 7px 12px;
+    border-bottom: 1px solid #161b22;
+    border-right: 1px solid #161b22;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  .csv-data-table tr:nth-child(even) td {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+
+  /* Empty State */
+  .empty-state {
+    display: none;
+    text-align: center;
+    padding: 48px 20px;
+    background-color: var(--bg-card);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+  }
+
+  /* Modals */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background-color: rgba(1, 4, 9, 0.78);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .modal-backdrop.open {
+    display: flex;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 580px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.6);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 14px 18px;
+    background-color: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  .modal-close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.3rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 6px;
+  }
+
+  .modal-body {
+    padding: 18px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 9px 12px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.86rem;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .form-control:focus {
+    border-color: var(--blue);
+  }
+
+  textarea.form-control {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    min-height: 150px;
+    resize: vertical;
+    line-height: 1.45;
+  }
+
+  .type-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .type-tab {
+    padding: 9px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background-color: var(--bg-input);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .type-tab.active {
+    background-color: rgba(88, 166, 255, 0.16);
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  /* Toast Notification */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 80;
+    background-color: #1f242c;
+    color: #ffffff;
+    border: 1px solid var(--emerald);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+    transition: all 0.2s ease;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    background-color: var(--bg-card);
+    padding: 16px 0;
+    margin-top: auto;
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 600px) {
+    .brand-title {
+      font-size: 1.05rem;
+    }
+    .brand-subtitle {
+      font-size: 0.72rem;
+    }
+    .card-header {
+      padding: 12px;
+    }
+    .line-code {
+      font-size: 0.76rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Sticky Header -->
+  <header>
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-logo">&lt;/&gt;</div>
+        <div>
+          <div class="brand-title">CodeVault</div>
+          <div class="brand-subtitle">23 Python Programs &bull; 5 CSV Datasets &bull; 5 Git &amp; Docker Guides</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn-primary" onclick="openAddModal()">+ Add Item</button>
+        <button type="button" class="btn btn-secondary" onclick="openExportModal()">Export / Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Search & Category Filter Controls -->
+  <section class="controls-section">
+    <div class="container">
+      <div class="search-row">
+        <div class="search-wrapper">
+          <span class="search-icon">&#128269;</span>
+          <input
+            type="text"
+            id="search-input"
+            class="search-input"
+            placeholder="Search Python code, datasets, Git or Docker commands..."
+            oninput="handleSearch(this.value)"
+          >
+          <button type="button" id="clear-search-btn" class="clear-search" onclick="clearSearch()" title="Clear search">&times;</button>
+        </div>
+        <div id="count-pill" class="count-pill">Showing 33 of 33 items</div>
+      </div>
+
+      <div id="category-bar" class="category-bar"></div>
+    </div>
+  </section>
+
+  <!-- Main Content Cards -->
+  <main>
+    <div class="container">
+      <div id="cards-list" class="cards-list"></div>
+
+      <div id="empty-state" class="empty-state">
+        <h3 style="color:#ffffff; margin-bottom:6px;">No matching items found</h3>
+        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:14px;">Try clearing your search filter or switching categories.</p>
+        <button type="button" class="btn btn-secondary" onclick="resetFilters()">Show All 33 Items</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-inner">
+      <span>CodeVault &bull; Zero-Dependency Single-File Hub</span>
+      <span>23 Python Programs &bull; 5 CSV Datasets &bull; 5 Git &amp; Docker Guides</span>
+    </div>
+  </footer>
+
+  <!-- Add Item Modal -->
+  <div id="add-modal" class="modal-backdrop" onclick="closeModalOnBackdrop(event, 'add-modal')">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Add New Code Snippet or CSV Dataset</span>
+        <button type="button" class="modal-close" onclick="closeModal('add-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="type-tabs">
+          <button type="button" id="tab-code" class="type-tab active" onclick="switchAddType('code')">Code / CLI Snippet</button>
+          <button type="button" id="tab-csv" class="type-tab" onclick="switchAddType('csv')">CSV Dataset</button>
+        </div>
+
+        <div class="form-group">
+          <label id="label-title" class="form-label" for="input-title">Title</label>
+          <input type="text" id="input-title" class="form-control" placeholder="e.g., Logistic Regression Classifier">
+        </div>
+
+        <div id="group-category" class="form-group">
+          <label class="form-label" for="input-category">Category</label>
+          <select id="input-category" class="form-control">
+            <option value="Data Visualization">Data Visualization</option>
+            <option value="Data Preprocessing">Data Preprocessing</option>
+            <option value="Machine Learning">Machine Learning</option>
+            <option value="Deep Learning">Deep Learning</option>
+            <option value="NLP">NLP</option>
+            <option value="Git & Docker">Git &amp; Docker</option>
+          </select>
+        </div>
+
+        <div id="group-csv-file" class="form-group" style="display:none;">
+          <label class="form-label" for="input-csv-file">Upload .csv File from Device (Optional)</label>
+          <input type="file" id="input-csv-file" accept=".csv,text/csv" class="form-control" onchange="handleCsvFileUpload(event)">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-desc">Description</label>
+          <input type="text" id="input-desc" class="form-control" placeholder="Brief description of what this program or dataset does">
+        </div>
+
+        <div class="form-group">
+          <label id="label-content" class="form-label" for="input-content">Code / Commands</label>
+          <textarea id="input-content" class="form-control" placeholder="Paste your Python code, CLI commands, or CSV rows here..."></textarea>
+        </div>
+
+        <div id="add-error" style="display:none; color:#ff7b72; font-size:0.8rem; font-weight:600;"></div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:4px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('add-modal')">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="saveNewItem()">Save Item</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export / Reset Modal -->
+  <div id="export-modal" class="modal-backdrop" onclick="closeModalOnBackdrop(event, 'export-modal')">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Export Backup or Restore Defaults</span>
+        <button type="button" class="modal-close" onclick="closeModal('export-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.8rem; color:var(--text-muted); background:var(--bg-input); padding:10px 12px; border-radius:10px; border:1px solid var(--border);">
+          Copy or download your current snippets as JSON, or restore all 33 built-in Python programs, CSV datasets, and Git/Docker guides.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label" for="export-json-area">Current Items JSON</label>
+          <textarea id="export-json-area" class="form-control" readonly></textarea>
+        </div>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-copy" onclick="copyExportJson()">Copy JSON</button>
+          <button type="button" class="btn btn-download" onclick="downloadExportJson()">Download JSON</button>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; padding-top:12px; border-top:1px solid var(--border);">
+          <div>
+            <strong style="font-size:0.82rem; color:#ff7b72;">Restore Default 33 Items</strong>
+            <p style="font-size:0.74rem; color:var(--text-dim);">Resets the list back to all 23 Python snippets, 5 CSV datasets &amp; 5 CLI guides.</p>
+          </div>
+          <button type="button" class="btn btn-danger" onclick="restoreDefaults()">Restore Defaults</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">Copied to clipboard!</div>
+
+<script>
+// All 33 Built-in Items stored as clean double-quoted string arrays joined by "\n"
+var DEFAULT_SNIPPETS = [
+  // --- 9 DATA VISUALIZATION PYTHON SNIPPETS ---
+  {
+    id: "dv-1",
+    type: "code",
+    language: "python",
+    title: "Data Visualization Setup & Titanic Dataset Load",
+    category: "Data Visualization",
+    description: "Imports Matplotlib and Pandas and loads the Titanic CSV dataset into a DataFrame.",
+    code: [
+      "import matplotlib.pyplot as plt",
+      "import pandas as pd",
+      "df=pd.read_csv('C:/Users/user/Downloads/kaggle/titanic (1).csv')",
+      "df"
+    ].join("\n")
+  },
+  {
+    id: "dv-2",
+    type: "code",
+    language: "python",
+    title: "Count of Sex (Bar Chart)",
+    category: "Data Visualization",
+    description: "Plots a bar chart showing the number of male and female passengers on board with axis labels and title.",
+    code: [
+      "a= df['sex'].value_counts().sort_index()",
+      "plt.bar(a.index, a.values)",
+      "plt.xlabel('Sex')",
+      "plt.ylabel('Number of Passengers')",
+      "plt.title('count of sex')",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "dv-3",
+    type: "code",
+    language: "python",
+    title: "Age vs Survival Status (Bar Chart)",
+    category: "Data Visualization",
+    description: "Plots a bar chart comparing passenger age with respect to their survival status (alive).",
+    code: [
+      "plt.bar(df['alive'],df['age'])",
+      "plt.title(\"alive and not alive passengers\")",
+      "plt.xlabel(\"alive\")",
+      "plt.ylabel(\"passengers age\")",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "dv-4",
+    type: "code",
+    language: "python",
+    title: "Distribution of Passenger Ages (Histogram)",
+    category: "Data Visualization",
+    description: "Plots a histogram dividing passenger ages into 10 equal bins.",
+    code: [
+      "plt.hist(df['age'],bins=10)",
+      "plt.title(\"distrubution of age\")",
+      "plt.xlabel(\"group of age\")",
+      "plt.ylabel(\"passengers\")",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "dv-5",
+    type: "code",
+    language: "python",
+    title: "Passengers in Each Class (Line Graph)",
+    category: "Data Visualization",
+    description: "Visualizes the number of passengers in each passenger class using a line plot.",
+    code: [
+      "a=df['class'].value_counts()",
+      "plt.title(\"count of class\")",
+      "plt.xlabel(\"class\")",
+      "plt.ylabel(\"passengers\")",
+      "a.plot(kind='line')"
+    ].join("\n")
+  },
+  {
+    id: "dv-6",
+    type: "code",
+    language: "python",
+    title: "Deck and Survived (Line Graph with Markers)",
+    category: "Data Visualization",
+    description: "Unstacks deck vs. survived counts and renders a line plot with circular markers.",
+    code: [
+      "a=df[['deck','survived']].value_counts().unstack()",
+      "a.plot(kind='line',marker='o')",
+      "plt.title(\"deck and survived\")",
+      "plt.xlabel(\"deck\")",
+      "plt.ylabel(\"passengers\")",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "dv-7",
+    type: "code",
+    language: "python",
+    title: "Age vs Fare (Scatter Plot)",
+    category: "Data Visualization",
+    description: "Creates a scatter plot examining the relationship between passenger age and ticket fare.",
+    code: [
+      "plt.scatter(df['age'],df['fare'])",
+      "plt.title(\"distrubution of age vs fare\")",
+      "plt.xlabel(\"group of age\")",
+      "plt.ylabel(\"fare\")",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "dv-8",
+    type: "code",
+    language: "python",
+    title: "Passenger Class Distribution (Pie Chart)",
+    category: "Data Visualization",
+    description: "Displays percentage breakdown across passenger classes using a Matplotlib pie chart.",
+    code: [
+      "plt.pie(df['class'].value_counts(),labels=[1,2,3],autopct='%1.2f%%')",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "dv-9",
+    type: "code",
+    language: "python",
+    title: "Distribution of Ticket Fares (Box Plot)",
+    category: "Data Visualization",
+    description: "Draws a box plot to inspect median, quartiles, and outliers in ticket fares.",
+    code: [
+      "plt.boxplot(df['fare'])",
+      "plt.title(\"distribution of fare\")",
+      "plt.ylabel(\"fare\")",
+      "plt.show()"
+    ].join("\n")
+  },
+
+  // --- 6 DATA PREPROCESSING & REDUCTION PYTHON SNIPPETS ---
+  {
+    id: "dp-1",
+    type: "code",
+    language: "python",
+    title: "Iris Dataset Exploration & Preprocessing",
+    category: "Data Preprocessing",
+    description: "Loads the Iris dataset, explores shape/nulls/target counts, maps species names, applies StandardScaler, and performs train-test split.",
+    code: [
+      "# Import Libraries",
+      "import pandas as pd",
+      "from sklearn.datasets import load_iris",
+      "from sklearn.model_selection import train_test_split",
+      "from sklearn.preprocessing import StandardScaler",
+      "",
+      "# Load Iris Dataset and Convert into DataFrame",
+      "iris = load_iris()",
+      "df = pd.DataFrame(iris.data, columns=iris.feature_names)",
+      "df['species'] = iris.target",
+      "",
+      "print(\"Target Values:\", iris.target_names)",
+      "print(df.head())",
+      "",
+      "# Data Exploration",
+      "print(\"\\nDataset Information:\")",
+      "print(df.info())",
+      "print(\"\\nDataset Shape:\", df.shape)",
+      "print(\"\\nColumn Names:\", df.columns)",
+      "print(\"\\nMissing Values:\\n\", df.isnull().sum())",
+      "print(\"\\nNumber of Flowers in Each Species:\\n\", df['species'].value_counts())",
+      "",
+      "# Convert Target Numbers into Species Names",
+      "df['species_name'] = df['species'].map({0: 'Setosa', 1: 'Versicolor', 2: 'Virginica'})",
+      "print(\"\\nData with Species Names:\\n\", df.head())",
+      "",
+      "# Preprocessing & Standardization",
+      "X = df[iris.feature_names]",
+      "y = df['species']",
+      "scaler = StandardScaler()",
+      "X_scaled = scaler.fit_transform(X)",
+      "print(\"\\nScaled Features:\\n\", X_scaled[:5])",
+      "",
+      "# Train-Test Split",
+      "X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)",
+      "print(\"\\nTraining Data Shape:\", X_train.shape)",
+      "print(\"Training Target Shape:\", y_train.shape)",
+      "print(\"Testing Data Shape:\", X_test.shape)",
+      "print(\"Testing Target Shape:\", y_test.shape)"
+    ].join("\n")
+  },
+  {
+    id: "dp-2",
+    type: "code",
+    language: "python",
+    title: "Missing Values Imputation (Titanic)",
+    category: "Data Preprocessing",
+    description: "Visualizes missing values with missingno and applies row deletion, column drop, constant fill, mean/mode/median imputation, and forward/backward fill.",
+    code: [
+      "import pandas as pd",
+      "import numpy as np",
+      "import missingno as msno",
+      "import seaborn as sns",
+      "import matplotlib.pyplot as plt",
+      "",
+      "df = sns.load_dataset(\"titanic\")",
+      "df.info()",
+      "print(\"\\nMissing Values Count:\\n\", df.isnull().sum())",
+      "",
+      "msno.bar(df)",
+      "plt.title(\"Bar Plot of Missing Values\")",
+      "plt.show()",
+      "",
+      "msno.matrix(df)",
+      "plt.title(\"Matrix Plot of Missing Values\")",
+      "plt.show()",
+      "",
+      "# Delete Rows with Missing Values",
+      "new_df = df.dropna(axis=0)",
+      "print(new_df.isnull().sum())",
+      "",
+      "# Delete 'deck' Column",
+      "col = df.drop(\"deck\", axis=1)",
+      "",
+      "# Replace with Arbitrary Value, Mean, Mode, Median",
+      "df[\"deck\"] = df[\"deck\"].fillna(\"C\")",
+      "df[\"age\"] = df[\"age\"].fillna(df[\"age\"].mean())",
+      "df[\"deck\"] = df[\"deck\"].fillna(df[\"deck\"].mode()[0])",
+      "df[\"age\"] = df[\"age\"].fillna(df[\"age\"].median())",
+      "",
+      "# Forward Fill & Backward Fill",
+      "print(df.ffill().head())",
+      "print(df.bfill().head())"
+    ].join("\n")
+  },
+  {
+    id: "dp-3",
+    type: "code",
+    language: "python",
+    title: "Outlier Detection and Handling (IQR & Winsorization)",
+    category: "Data Preprocessing",
+    description: "Detects outliers via scatter/box/histogram plots and IQR bounds, then demonstrates removal, percentile winsorization, and mean/median replacement.",
+    code: [
+      "import numpy as np",
+      "import pandas as pd",
+      "import seaborn as sns",
+      "import matplotlib.pyplot as plt",
+      "",
+      "tdf = sns.load_dataset(\"titanic\")",
+      "",
+      "# Scatter, Box & Histogram Plots",
+      "fig, ax = plt.subplots(figsize=(10, 4))",
+      "ax.scatter(tdf[\"age\"], tdf[\"fare\"])",
+      "ax.set_xlabel(\"Age\")",
+      "ax.set_ylabel(\"Fare\")",
+      "plt.title(\"Scatter Plot\")",
+      "plt.show()",
+      "",
+      "tdf[\"age\"].plot(kind=\"box\")",
+      "plt.title(\"Box Plot of Age\")",
+      "plt.show()",
+      "",
+      "tdf[\"fare\"].plot(kind=\"hist\", bins=20)",
+      "plt.title(\"Histogram of Fare\")",
+      "plt.show()",
+      "",
+      "# IQR Bounds",
+      "q1 = tdf[\"age\"].quantile(0.25)",
+      "q3 = tdf[\"age\"].quantile(0.75)",
+      "iqr = q3 - q1",
+      "ub = q3 + 1.5 * iqr",
+      "lb = q1 - 1.5 * iqr",
+      "print(\"Q1:\", q1, \"Q3:\", q3, \"IQR:\", iqr, \"Upper:\", ub, \"Lower:\", lb)",
+      "",
+      "# Removing Outliers",
+      "t_remove = tdf.copy()",
+      "t_remove.drop(t_remove[(t_remove[\"age\"] > ub) | (t_remove[\"age\"] < lb)].index, inplace=True)",
+      "",
+      "# Winsorization (1st and 99th Percentile Caps)",
+      "t_cap = tdf.copy()",
+      "farearr = t_cap[\"fare\"].dropna()",
+      "uc, lc = np.percentile(farearr, 99), np.percentile(farearr, 1)",
+      "t_cap[\"fare\"] = t_cap[\"fare\"].clip(lower=lc, upper=uc)",
+      "",
+      "# Replace Outliers with Mean & Median",
+      "t_mean = tdf.copy()",
+      "t_mean[\"age\"] = np.where((t_mean[\"age\"] < lb) | (t_mean[\"age\"] > ub), t_mean[\"age\"].mean(), t_mean[\"age\"])",
+      "",
+      "t_median = tdf.copy()",
+      "t_median[\"age\"] = np.where((t_median[\"age\"] < lb) | (t_median[\"age\"] > ub), t_median[\"age\"].median(), t_median[\"age\"])"
+    ].join("\n")
+  },
+  {
+    id: "dp-4",
+    type: "code",
+    language: "python",
+    title: "Numerosity Reduction — Random Sampling",
+    category: "Data Preprocessing",
+    description: "Generates a 1,000-record dataset using NumPy random integers and extracts a reproducible 100-row random sample via Pandas sample().",
+    code: [
+      "# 1. Numerosity Reduction - Random Sampling",
+      "import numpy as np",
+      "import pandas as pd",
+      "",
+      "# Create Dataset",
+      "data = pd.DataFrame({",
+      "    \"Marks\": np.random.randint(40, 100, 1000)",
+      "})",
+      "",
+      "# Random sample of 100 records",
+      "sam = data.sample(n=100, random_state=1)",
+      "",
+      "print(\"Original data:\", len(data))",
+      "print(\"Sample data:\", len(sam))",
+      "print(sam.head())"
+    ].join("\n")
+  },
+  {
+    id: "dp-5",
+    type: "code",
+    language: "python",
+    title: "Numerosity Reduction — Data Aggregation",
+    category: "Data Preprocessing",
+    description: "Aggregates regional sales figures by grouping records by Region and summing Sales.",
+    code: [
+      "# 2. Numerosity Reduction - Data Aggregation",
+      "import pandas as pd",
+      "",
+      "sales = {",
+      "    'Region': ['North', 'South', 'North', 'East', 'South', 'West'],",
+      "    'Sales': [1000, 3000, 4000, 5000, 3000, 2000]",
+      "}",
+      "",
+      "df = pd.DataFrame(sales)",
+      "result = df.groupby('Region')['Sales'].sum()",
+      "print(result)"
+    ].join("\n")
+  },
+  {
+    id: "dp-6",
+    type: "code",
+    language: "python",
+    title: "Dimensionality Reduction — PCA (Iris Dataset)",
+    category: "Data Preprocessing",
+    description: "Applies Principal Component Analysis (PCA) with n_components=2 to reduce the 4-feature Iris dataset into 2 dimensions.",
+    code: [
+      "# 3. Dimensionality Reduction - PCA (Iris Dataset)",
+      "from sklearn.datasets import load_iris",
+      "from sklearn.decomposition import PCA",
+      "",
+      "iris = load_iris()",
+      "x = iris.data",
+      "",
+      "pca = PCA(n_components=2)",
+      "x_new = pca.fit_transform(x)",
+      "",
+      "print(\"Original dataset:\", x.shape)",
+      "print(\"Reduced dataset:\", x_new.shape)",
+      "print(x_new[:5])"
+    ].join("\n")
+  },
+
+  // --- 6 MACHINE LEARNING PYTHON SNIPPETS ---
+  {
+    id: "ml-1",
+    type: "code",
+    language: "python",
+    title: "K-Means Clustering (Mall Customers)",
+    category: "Machine Learning",
+    description: "Finds optimal clusters using the Elbow Method (WCSS) and plots 5 customer segments with centroids on Mall_Customers.csv.",
+    code: [
+      "import numpy as np",
+      "import pandas as pd",
+      "import matplotlib.pyplot as plt",
+      "import seaborn as sns",
+      "from sklearn.cluster import KMeans",
+      "import warnings",
+      "warnings.filterwarnings('ignore')",
+      "",
+      "data = pd.read_csv('Mall_Customers.csv')",
+      "x = data.iloc[:, 3:5].values",
+      "wcss = []",
+      "",
+      "for i in range(1, 11):",
+      "    kmeans = KMeans(n_clusters=i)",
+      "    kmeans.fit(x)",
+      "    wcss.append(kmeans.inertia_)",
+      "",
+      "plt.plot(range(1, 11), wcss)",
+      "plt.title('The Elbow Method')",
+      "plt.xlabel('No. of Clusters')",
+      "plt.ylabel('wcss')",
+      "plt.show()",
+      "",
+      "km1 = KMeans(n_clusters=5, init='k-means++', max_iter=300, n_init=10, random_state=0)",
+      "y_means = km1.fit_predict(x)",
+      "plt.scatter(x[y_means == 0, 0], x[y_means == 0, 1], s=100, c='pink', label='C1:Kanjoos')",
+      "plt.scatter(x[y_means == 1, 0], x[y_means == 1, 1], s=100, c='yellow', label='C2:Average')",
+      "plt.scatter(x[y_means == 2, 0], x[y_means == 2, 1], s=100, c='cyan', label='C3:Bakra/Target')",
+      "plt.scatter(x[y_means == 3, 0], x[y_means == 3, 1], s=100, c='magenta', label='C4:Pokiri')",
+      "plt.scatter(x[y_means == 4, 0], x[y_means == 4, 1], s=100, c='orange', label='C5:Intelligent')",
+      "plt.scatter(km1.cluster_centers_[:, 0], km1.cluster_centers_[:, 1], s=50, c='blue', label='centroid')",
+      "plt.title('K Means Clustering')",
+      "plt.xlabel('Annual Income')",
+      "plt.ylabel('Spending Score')",
+      "plt.legend()",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "ml-2",
+    type: "code",
+    language: "python",
+    title: "Support Vector Machine (SVM Classifier)",
+    category: "Machine Learning",
+    description: "Classifies apples and oranges by weight and size using Scikit-Learn SVC, confusion matrix, and single-sample prediction.",
+    code: [
+      "import seaborn as sns",
+      "import pandas as pd",
+      "import matplotlib.pyplot as plt",
+      "from sklearn.model_selection import train_test_split",
+      "from sklearn.svm import SVC",
+      "from sklearn.metrics import confusion_matrix",
+      "",
+      "data = pd.read_csv('apples_and_oranges.csv')",
+      "y = data['Class']",
+      "X = data.drop('Class', axis=1)",
+      "",
+      "sns.scatterplot(x='Weight', y='Size', hue='Class', data=data)",
+      "plt.show()",
+      "",
+      "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=10)",
+      "classifier = SVC()",
+      "classifier.fit(X_train, y_train)",
+      "y_pred = classifier.predict(X_test)",
+      "cm = confusion_matrix(y_test, y_pred)",
+      "print(cm)",
+      "accuracy = float(cm.diagonal().sum()) / len(y_test)",
+      "print('model accuracy is:', accuracy * 100, '%')",
+      "X_test1 = [[73, 6]]",
+      "y_pred1 = classifier.predict(X_test1)",
+      "print('predicted class is:', y_pred1[0])"
+    ].join("\n")
+  },
+  {
+    id: "ml-3",
+    type: "code",
+    language: "python",
+    title: "Logistic Regression (Fish Species Classification)",
+    category: "Machine Learning",
+    description: "Standardizes morphological fish measurements and trains a multi-class Logistic Regression model with a Seaborn confusion matrix heatmap.",
+    code: [
+      "import matplotlib.pyplot as plt",
+      "import pandas as pd",
+      "import seaborn as sns",
+      "from sklearn.linear_model import LogisticRegression",
+      "from sklearn.metrics import confusion_matrix, accuracy_score",
+      "from sklearn.model_selection import train_test_split",
+      "from sklearn.preprocessing import StandardScaler",
+      "",
+      "df = pd.read_csv('dataset_Fish.csv')",
+      "y = df['Species']",
+      "X = df.drop('Species', axis=1)",
+      "",
+      "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)",
+      "scaler = StandardScaler()",
+      "X_train_scaled = scaler.fit_transform(X_train)",
+      "X_test_scaled = scaler.transform(X_test)",
+      "",
+      "model = LogisticRegression()",
+      "model.fit(X_train_scaled, y_train)",
+      "y_pred = model.predict(X_test_scaled)",
+      "print('Accuracy:', accuracy_score(y_test, y_pred))",
+      "",
+      "cm = confusion_matrix(y_test, y_pred)",
+      "plt.figure()",
+      "sns.heatmap(cm, annot=True)",
+      "plt.xlabel('Predicted Species')",
+      "plt.ylabel('Actual Species')",
+      "plt.title('Confusion Matrix Heatmap - Fish Classification')",
+      "plt.show()"
+    ].join("\n")
+  },
+  {
+    id: "ml-4",
+    type: "code",
+    language: "python",
+    title: "Decision Tree & Random Forest (Breast Cancer Dataset)",
+    category: "Machine Learning",
+    description: "Compares DecisionTreeClassifier and RandomForestClassifier on the Breast Cancer dataset with confusion matrices and classification reports.",
+    code: [
+      "import pandas as pd",
+      "import matplotlib.pyplot as plt",
+      "import warnings",
+      "warnings.filterwarnings(\"ignore\")",
+      "from sklearn.datasets import load_breast_cancer",
+      "from sklearn.model_selection import train_test_split",
+      "from sklearn.tree import DecisionTreeClassifier",
+      "from sklearn.ensemble import RandomForestClassifier",
+      "from sklearn.metrics import accuracy_score, ConfusionMatrixDisplay, classification_report",
+      "",
+      "cancer_data = load_breast_cancer()",
+      "df = pd.DataFrame(cancer_data.data, columns=cancer_data.feature_names)",
+      "X_train, X_test, y_train, y_test = train_test_split(df, cancer_data.target, random_state=42, test_size=0.33)",
+      "",
+      "# Decision Tree",
+      "dtc = DecisionTreeClassifier()",
+      "dtc.fit(X_train, y_train)",
+      "y_pred = dtc.predict(X_test)",
+      "print(\"\\nDecision Tree Accuracy:\", accuracy_score(y_test, y_pred))",
+      "ConfusionMatrixDisplay.from_estimator(dtc, X_test, y_test)",
+      "plt.title(\"Decision Tree Confusion Matrix\")",
+      "plt.show()",
+      "print(classification_report(y_test, y_pred))",
+      "",
+      "# Random Forest",
+      "rfc = RandomForestClassifier(n_estimators=100, random_state=42)",
+      "rfc.fit(X_train, y_train)",
+      "y_pred = rfc.predict(X_test)",
+      "print(\"\\nRandom Forest Accuracy:\", accuracy_score(y_test, y_pred))",
+      "ConfusionMatrixDisplay.from_estimator(rfc, X_test, y_test)",
+      "plt.title(\"Random Forest Confusion Matrix\")",
+      "plt.show()",
+      "print(classification_report(y_test, y_pred))"
+    ].join("\n")
+  },
+  {
+    id: "ml-5",
+    type: "code",
+    language: "python",
+    title: "Linear Regression on Advertising Dataset",
+    category: "Machine Learning",
+    description: "Predicts product Sales from TV, Radio, and Newspaper advertising spend using standardized Linear Regression, R2 score, MSE, and scatter plot.",
+    code: [
+      "import matplotlib.pyplot as plt",
+      "import pandas as pd",
+      "import numpy as np",
+      "from sklearn.model_selection import train_test_split",
+      "from sklearn.linear_model import LinearRegression",
+      "from sklearn.preprocessing import StandardScaler",
+      "from sklearn.metrics import mean_squared_error, r2_score",
+      "",
+      "df = pd.read_csv(\"Advertising.csv\")",
+      "df.dropna(inplace=True, axis=0)",
+      "y = df['Sales']",
+      "X = df.drop('Sales', axis=1)",
+      "",
+      "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)",
+      "scaler = StandardScaler()",
+      "scaler.fit(X_train)",
+      "X_train = scaler.transform(X_train)",
+      "X_test = scaler.transform(X_test)",
+      "",
+      "model = LinearRegression()",
+      "model.fit(X_train, y_train)",
+      "y_pred = model.predict(X_test)",
+      "",
+      "y_df = pd.DataFrame({'y_test': y_test, 'y_pred': y_pred})",
+      "print(y_df)",
+      "print(\"R2 Score:\", r2_score(y_test, y_pred))",
+      "print(\"MSE:\", mean_squared_error(y_test, y_pred))",
+      "",
+      "plt.scatter(y_test, y_pred)",
+      "plt.xlabel(\"Actual Values\")",
+      "plt.ylabel(\"Predicted Values\")",
+      "plt.title(\"Actual vs Predicted Values\")",
+      "plt.show()",
+      "print(\"Coefficients:\", model.coef_)",
+      "print(\"Intercept:\", model.intercept_)"
+    ].join("\n")
+  },
+  {
+    id: "ml-6",
+    type: "code",
+    language: "python",
+    title: "Decision Tree & Random Forest on Play Tennis Dataset",
+    category: "Machine Learning",
+    description: "Trains Decision Tree and Random Forest classifiers (criterion='entropy') on play_tennis_dataset.csv using LabelEncoder, one-hot encoding (pd.get_dummies), and plot_tree visualization.",
+    code: [
+      "# On tennis data perform decision tree & random forest algorithm",
+      "# Import Libraries",
+      "import pandas as pd",
+      "import matplotlib.pyplot as plt",
+      "from sklearn.model_selection import train_test_split",
+      "from sklearn.preprocessing import LabelEncoder",
+      "from sklearn.tree import DecisionTreeClassifier, plot_tree",
+      "from sklearn.ensemble import RandomForestClassifier",
+      "from sklearn import metrics",
+      "",
+      "# Load the dataset",
+      "df = pd.read_csv(\"play_tennis_dataset.csv\")",
+      "print(df.head())",
+      "",
+      "# Preprocessing",
+      "X = df.drop(columns=['Day', 'Play'])",
+      "y = df['Play']",
+      "",
+      "# Convert categorical features into numeric",
+      "X = pd.get_dummies(X)",
+      "",
+      "# Encode target variable",
+      "le = LabelEncoder()",
+      "y = le.fit_transform(y)  # for yes=1, no=0",
+      "print(\"\\nAfter conversation\")",
+      "print(X.head())",
+      "print(y)",
+      "",
+      "# Train test split",
+      "X_train, X_test, y_train, y_test = train_test_split(",
+      "    X, y, test_size=0.3, random_state=42, stratify=y",
+      ")",
+      "",
+      "# Decision Tree",
+      "dtc = DecisionTreeClassifier(criterion=\"entropy\", random_state=42)",
+      "dtc.fit(X_train, y_train)",
+      "y_pred_dt = dtc.predict(X_test)",
+      "print(\"Decision tree accuracy:\", metrics.accuracy_score(y_test, y_pred_dt))",
+      "",
+      "# Plot tree",
+      "plt.figure(figsize=(12, 8))",
+      "plot_tree(dtc, feature_names=X.columns, class_names=le.classes_, filled=True)",
+      "plt.show()",
+      "",
+      "# Random Forest",
+      "rfc = RandomForestClassifier(n_estimators=10, criterion=\"entropy\", random_state=42)",
+      "rfc.fit(X_train, y_train)",
+      "y_pred_rf = rfc.predict(X_test)",
+      "print(\"Random Forest Accuracy:\", metrics.accuracy_score(y_test, y_pred_rf))"
+    ].join("\n")
+  },
+
+  // --- 1 DEEP LEARNING PYTHON SNIPPET ---
+  {
+    id: "dl-1",
+    type: "code",
+    language: "python",
+    title: "Keras Neural Network (MNIST Digit Classification)",
+    category: "Deep Learning",
+    description: "Builds a Sequential Dense neural network in TensorFlow/Keras to classify handwritten MNIST digits (0-9).",
+    code: [
+      "import tensorflow as tf",
+      "from tensorflow.keras.models import Sequential",
+      "from tensorflow.keras.layers import Flatten, Dense",
+      "import numpy as np",
+      "",
+      "(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()",
+      "x_train = x_train / 255.0",
+      "x_test = x_test / 255.0",
+      "",
+      "model = Sequential([",
+      "    Flatten(input_shape=(28, 28)),",
+      "    Dense(128, activation='relu'),",
+      "    Dense(64, activation='relu'),",
+      "    Dense(10, activation='softmax')",
+      "])",
+      "",
+      "model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])",
+      "history = model.fit(x_train, y_train, epochs=10)",
+      "test_loss, test_accuracy = model.evaluate(x_test, y_test)",
+      "print(\"Test Accuracy:\", test_accuracy)",
+      "",
+      "predictions = model.predict(x_test)",
+      "predicted_class = np.argmax(predictions[0])",
+      "print(\"Predicted digit:\", predicted_class)",
+      "print(\"Actual digit:\", y_test[0])"
+    ].join("\n")
+  },
+
+  // --- 1 NLP PYTHON SNIPPET ---
+  {
+    id: "nlp-1",
+    type: "code",
+    language: "python",
+    title: "NLP Text Processing & Vectorization (NLTK & Scikit-Learn)",
+    category: "NLP",
+    description: "Performs tokenization, stopword removal, POS tagging, Named Entity Recognition (NER), n-grams, Bag of Words, and TF-IDF vectorization.",
+    code: [
+      "import nltk",
+      "from nltk.tokenize import word_tokenize",
+      "from nltk.corpus import stopwords",
+      "from nltk import pos_tag, ne_chunk",
+      "from nltk.util import ngrams",
+      "from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer",
+      "",
+      "nltk.download('punkt')",
+      "nltk.download('stopwords')",
+      "nltk.download('averaged_perceptron_tagger')",
+      "nltk.download('maxent_ne_chunker')",
+      "nltk.download('words')",
+      "nltk.download('punkt_tab')",
+      "nltk.download('averaged_perceptron_tagger_eng')",
+      "nltk.download('maxent_ne_chunker_tab')",
+      "",
+      "text = \"Apple is looking at buying U.K. startup for $1 billion. The striped bats were hanging on their feet.\"",
+      "tokens = word_tokenize(text)",
+      "print(\"Tokens:\", tokens)",
+      "",
+      "stop_words = set(stopwords.words('english'))",
+      "filtered_tokens = [word for word in tokens if word.lower() not in stop_words]",
+      "print(\"After Stopword Removal:\", filtered_tokens)",
+      "",
+      "pos_tags = pos_tag(filtered_tokens)",
+      "print(\"POS Tags:\", pos_tags)",
+      "",
+      "ner_tree = ne_chunk(pos_tags)",
+      "print(\"Named Entities:\", ner_tree)",
+      "",
+      "print(\"Bigrams:\", list(ngrams(filtered_tokens, 2)))",
+      "print(\"Trigrams:\", list(ngrams(filtered_tokens, 3)))",
+      "",
+      "corpus = [",
+      "    \"Apple is looking at buying U.K. startup for $1 billion.\",",
+      "    \"The striped bats were hanging on their feet.\"",
+      "]",
+      "vectorizer = CountVectorizer(stop_words='english')",
+      "bow_matrix = vectorizer.fit_transform(corpus)",
+      "print(\"Bag of Words Features:\", vectorizer.get_feature_names_out())",
+      "print(bow_matrix.toarray())",
+      "",
+      "tfidf_vectorizer = TfidfVectorizer(stop_words='english')",
+      "tfidf_matrix = tfidf_vectorizer.fit_transform(corpus)",
+      "print(\"TF-IDF Features:\", tfidf_vectorizer.get_feature_names_out())",
+      "print(tfidf_matrix.toarray())"
+    ].join("\n")
+  },
+
+  // --- 5 CSV DATASETS ---
+  {
+    id: "csv-1",
+    type: "csv",
+    language: "csv",
+    title: "titanic.csv",
+    category: "CSV Datasets",
+    description: "Passenger survival dataset with sex, age, class, deck, fare, and alive columns used across the Data Visualization and Preprocessing scripts.",
+    code: [
+      "survived,pclass,sex,age,sibsp,parch,fare,embarked,class,deck,alive",
+      "0,3,male,22,1,0,7.25,S,Third,,no",
+      "1,1,female,38,1,0,71.2833,C,First,C,yes",
+      "1,3,female,26,0,0,7.925,S,Third,,yes",
+      "1,1,female,35,1,0,53.1,S,First,C,yes",
+      "0,3,male,35,0,0,8.05,S,Third,,no",
+      "0,3,male,,0,0,8.4583,Q,Third,,no",
+      "0,1,male,54,0,0,51.8625,S,First,E,no",
+      "0,3,male,2,3,1,21.075,S,Third,,no",
+      "1,3,female,27,0,2,11.1333,S,Third,,yes",
+      "1,2,female,14,1,0,30.0708,C,Second,,yes",
+      "1,3,female,4,1,1,16.7,S,Third,G,yes",
+      "1,1,female,58,0,0,26.55,S,First,C,yes",
+      "0,3,male,20,0,0,8.05,S,Third,,no",
+      "0,3,male,39,1,5,31.275,S,Third,,no",
+      "0,3,female,14,0,0,7.8542,S,Third,,no"
+    ].join("\n")
+  },
+  {
+    id: "csv-2",
+    type: "csv",
+    language: "csv",
+    title: "Mall_Customers.csv",
+    category: "CSV Datasets",
+    description: "Customer segmentation dataset containing Annual Income (k$) and Spending Score (1-100) for K-Means Clustering.",
+    code: [
+      "CustomerID,Gender,Age,Annual Income (k$),Spending Score (1-100)",
+      "1,Male,19,15,39",
+      "2,Male,21,15,81",
+      "3,Female,20,16,6",
+      "4,Female,23,16,77",
+      "5,Female,31,17,40",
+      "6,Female,22,17,76",
+      "7,Female,35,18,6",
+      "8,Female,23,18,94",
+      "9,Male,64,19,3",
+      "10,Female,30,19,72",
+      "11,Male,67,19,14",
+      "12,Female,35,19,99",
+      "13,Female,58,20,15",
+      "14,Female,24,20,77",
+      "15,Male,37,20,13"
+    ].join("\n")
+  },
+  {
+    id: "csv-3",
+    type: "csv",
+    language: "csv",
+    title: "apples_and_oranges.csv",
+    category: "CSV Datasets",
+    description: "Fruit classification dataset with Weight, Size, and Class labels used in the Support Vector Machine (SVM) classifier.",
+    code: [
+      "Weight,Size,Class",
+      "69,4.39,orange",
+      "69,4.21,orange",
+      "65,4.09,orange",
+      "72,5.85,apple",
+      "67,4.70,orange",
+      "73,5.68,apple",
+      "70,5.56,apple",
+      "75,5.11,apple",
+      "74,5.36,apple",
+      "65,4.27,orange",
+      "73,5.79,apple",
+      "70,5.47,apple",
+      "74,5.53,apple",
+      "68,4.47,orange",
+      "74,5.22,apple"
+    ].join("\n")
+  },
+  {
+    id: "csv-4",
+    type: "csv",
+    language: "csv",
+    title: "dataset_Fish.csv",
+    category: "CSV Datasets",
+    description: "Multi-species fish measurement dataset (Species, Weight, Length1, Length2, Length3, Height, Width) for Logistic Regression.",
+    code: [
+      "Species,Weight,Length1,Length2,Length3,Height,Width",
+      "Bream,242,23.2,25.4,30.0,11.52,4.02",
+      "Bream,290,24.0,26.3,31.2,12.48,4.3056",
+      "Bream,340,23.9,26.5,31.1,12.3778,4.6961",
+      "Roach,160,20.5,22.5,25.3,7.0334,3.8203",
+      "Roach,180,21.0,23.0,25.8,7.5344,3.8352",
+      "Perch,110,19.0,21.0,22.5,5.6925,3.555",
+      "Perch,130,19.3,21.3,22.8,6.384,3.534",
+      "Pike,200,30.0,32.3,34.8,5.568,3.3756",
+      "Pike,300,31.7,34.0,37.8,5.7078,4.158",
+      "Smelt,6.7,9.3,9.8,10.8,1.7388,1.0476",
+      "Smelt,7.5,10.0,10.5,11.6,1.972,1.16",
+      "Parkki,55,13.5,14.7,16.5,6.8475,2.3265"
+    ].join("\n")
+  },
+  {
+    id: "csv-5",
+    type: "csv",
+    language: "csv",
+    title: "Advertising.csv",
+    category: "CSV Datasets",
+    description: "Marketing channel spend (TV, Radio, Newspaper) and product Sales dataset used in the Linear Regression script.",
+    code: [
+      "TV,Radio,Newspaper,Sales",
+      "230.1,37.8,69.2,22.1",
+      "44.5,39.3,45.1,10.4",
+      "17.2,45.9,69.3,9.3",
+      "151.5,41.3,58.5,18.5",
+      "180.8,10.8,58.4,12.9",
+      "8.7,48.9,75.0,7.2",
+      "57.5,32.8,23.5,11.8",
+      "120.2,19.6,11.6,13.2",
+      "8.6,2.1,1.0,4.8",
+      "199.8,2.6,21.2,10.6",
+      "66.1,5.8,24.2,8.6",
+      "214.7,24.0,4.0,17.4",
+      "23.8,35.1,65.9,9.2",
+      "97.5,7.6,7.2,9.7",
+      "204.1,32.9,46.0,19.0"
+    ].join("\n")
+  },
+
+  // --- 5 GIT & DOCKER CLI GUIDES ---
+  {
+    id: "cli-1",
+    type: "command",
+    language: "bash",
+    title: "Google Cloud Shell — Python Docker Container Setup",
+    category: "Git & Docker",
+    description: "Step-by-step commands to create mydockerapp, write app.py and the Python 3.11 Dockerfile, build mypython-app, and run mycontainer.",
+    code: [
+      "# 1. Create and enter project directory",
+      "mkdir mydockerapp",
+      "cd mydockerapp",
+      "pwd",
+      "",
+      "# 2. Create Python application (app.py)",
+      "nano app.py",
+      "# Add inside app.py:",
+      "# print(\"Hello from my Docker Container\")",
+      "ls",
+      "",
+      "# 3. Create Dockerfile",
+      "nano Dockerfile",
+      "# Add inside Dockerfile:",
+      "# FROM python:3.11",
+      "# WORKDIR /app",
+      "# COPY app.py .",
+      "# CMD [\"python\", \"app.py\"]",
+      "ls",
+      "",
+      "# 4. Build and run Docker container (inside mydockerapp)",
+      "pwd",
+      "docker build -t mypython-app .",
+      "docker images",
+      "docker run --name mycontainer mypython-app",
+      "docker ps -a"
+    ].join("\n")
+  },
+  {
+    id: "cli-2",
+    type: "command",
+    language: "bash",
+    title: "Basic Local Git Operations",
+    category: "Git & Docker",
+    description: "Core local Git commands covering user configuration, repository initialization, staging, committing, remote push/pull, and branching.",
+    code: [
+      "# Git: configurations",
+      "git config --global user.name \"FirstName LastName\"",
+      "git config --global user.email \"your-email@email-provider.com\"",
+      "git config --global color.ui true",
+      "git config --list",
+      "",
+      "# Git: starting a repository",
+      "git init",
+      "git status",
+      "",
+      "# Git: staging files",
+      "git add <file-name>",
+      "git add <file-name> <another-file-name> <yet-another-file-name>",
+      "git add .",
+      "git add --all",
+      "git add -A",
+      "git rm --cached <file-name>",
+      "git reset <file-name>",
+      "",
+      "# Git: committing to a repository",
+      "git commit -m \"Add three files\"",
+      "git reset --soft HEAD^",
+      "git commit --amend -m \"<enter your message>\"",
+      "",
+      "# Git: pulling and pushing from and to repositories",
+      "git remote add origin <link>",
+      "git push -u origin master",
+      "git clone <clone>",
+      "git pull",
+      "",
+      "# Git: branching",
+      "git branch",
+      "git branch <branch-name>",
+      "git checkout <branch-name>",
+      "git merge <branch-name>",
+      "git checkout -b <branch-name>"
+    ].join("\n")
+  },
+  {
+    id: "cli-3",
+    type: "command",
+    language: "bash",
+    title: "Basic Docker Commands Reference",
+    category: "Git & Docker",
+    description: "Quick reference for running, listing, stopping, and removing Docker containers, images, and multi-container Compose stacks.",
+    code: [
+      "# Runs a container from an image (Ex: docker run ubuntu)",
+      "docker run <image>",
+      "",
+      "# Lists running containers",
+      "docker ps",
+      "",
+      "# Lists all containers (including stopped ones)",
+      "docker ps -a",
+      "",
+      "# Lists downloaded images",
+      "docker images",
+      "",
+      "# Stops a running container (Ex: docker stop mywebserver)",
+      "docker stop <container_id>",
+      "",
+      "# Removes a container (Ex: docker rm mywebserver)",
+      "docker rm <container_id>",
+      "",
+      "# Removes an image (Ex: docker rmi ubuntu)",
+      "docker rmi <image_id>",
+      "",
+      "# Starts multi-container Docker services using docker-compose.yml",
+      "docker-compose up"
+    ].join("\n")
+  },
+  {
+    id: "cli-4",
+    type: "command",
+    language: "bash",
+    title: "Git Repository Workflow: Create, Clone, Stage, View & Undo",
+    category: "Git & Docker",
+    description: "Complete Git Bash and GitHub repository workflow covering creation, cloning, Vim editing, staging, committing, viewing history, and restoring files.",
+    code: [
+      "# 1. Creating a Git Repository (in Git Bash)",
+      "mkdir foldername",
+      "cd foldername",
+      "git init",
+      "# Write some code, then stage and commit:",
+      "git add .",
+      "git commit -m \"Initial commit\"",
+      "",
+      "# 2. Creating a Git Repository in GitHub",
+      "# Upper-right '+' menu -> New repository -> Enter name & description -> Choose visibility -> Initialize with README -> Click Create repository",
+      "",
+      "# 3. Cloning a Repository",
+      "git clone https://github.com/username/repository.git",
+      "",
+      "# 4. Making & recording changes (Vim editor)",
+      "vim filename",
+      "# Press Esc, type :wq and press Enter to save and exit",
+      "",
+      "# 5. Staging & committing changes",
+      "git add filename",
+      "git commit -m \"Update filename\"",
+      "",
+      "# 6. Viewing file contents & history",
+      "cat filename",
+      "git log",
+      "",
+      "# 7. Undoing changes in a file",
+      "git restore filename"
+    ].join("\n")
+  },
+  {
+    id: "cli-5",
+    type: "command",
+    language: "bash",
+    title: "Git Branching & Merging Commands",
+    category: "Git & Docker",
+    description: "Commands for creating branches, switching branches with git checkout or git switch, and merging local branches.",
+    code: [
+      "# 1. Creating & switching to new branches",
+      "# Create a new branch:",
+      "git branch branchname",
+      "",
+      "# Switch to another branch (Method 1):",
+      "git checkout branchname",
+      "",
+      "# Switch to another branch (Method 2):",
+      "git switch branchname",
+      "",
+      "# Create and switch in one command:",
+      "git checkout -b branchname",
+      "",
+      "# 2. Merging local branches together",
+      "# Switch to target branch (e.g., main/master), then merge:",
+      "git merge branchname"
+    ].join("\n")
+  }
+];
+
+var STORAGE_KEY = "codevault_v8";
+var CATEGORIES = [
+  "All",
+  "Data Visualization",
+  "Data Preprocessing",
+  "Machine Learning",
+  "Deep Learning",
+  "NLP",
+  "CSV Datasets",
+  "Git & Docker"
+];
+
+var items = [];
+var activeCategory = "All";
+var searchQuery = "";
+var expandedState = {};
+var csvRawState = {};
+var currentAddType = "code";
+
+// Safe localStorage wrapper for offline Android viewers & GitHub Pages
+function safeGetStorage(key) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch (e) {
+    return null;
+  }
+}
+
+function safeSetStorage(key, value) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch (e) {
+    // Ignore storage restriction errors in sandboxed/file viewers
+  }
+}
+
+function loadItems() {
+  var saved = safeGetStorage(STORAGE_KEY);
+  if (saved) {
+    try {
+      var parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        items = parsed;
+        return;
+      }
+    } catch (e) {
+      // Fallback to defaults if stored JSON is corrupted
+    }
+  }
+  items = DEFAULT_SNIPPETS.slice();
+  safeSetStorage(STORAGE_KEY, JSON.stringify(items));
+}
+
+function saveItems() {
+  safeSetStorage(STORAGE_KEY, JSON.stringify(items));
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// Embedded Syntax Highlighter for Python and Bash/CLI
+function highlightLine(rawLine, language) {
+  if (!rawLine) {
+    return " ";
+  }
+  var escaped = escapeHtml(rawLine);
+
+  if (language === "bash") {
+    var trimmed = rawLine.trim();
+    if (trimmed.charAt(0) === "#") {
+      return "<span class=\"tok-com\">" + escaped + "</span>";
+    }
+    var commentIdx = escaped.indexOf(" #");
+    var codePart = commentIdx !== -1 ? escaped.slice(0, commentIdx) : escaped;
+    var commentPart = commentIdx !== -1 ? "<span class=\"tok-com\">" + escaped.slice(commentIdx) + "</span>" : "";
+
+    codePart = codePart.replace(/(&quot;.*?&quot;|&#39;.*?&#39;)/g, "<span class=\"tok-str\">$1</span>");
+    codePart = codePart.replace(/^(\s*)(git|docker|docker-compose|mkdir|cd|pwd|nano|ls|vim|cat)\b/, "$1<span class=\"tok-cmd\">$2</span>");
+    codePart = codePart.replace(/(\s)(--?[a-zA-Z0-9_-]+)/g, "$1<span class=\"tok-flag\">$2</span>");
+    return codePart + commentPart;
+  }
+
+  // Python highlighting
+  var pyTrimmed = rawLine.trim();
+  if (pyTrimmed.charAt(0) === "#") {
+    return "<span class=\"tok-com\">" + escaped + "</span>";
+  }
+
+  var tokens = [];
+  function storeToken(html) {
+    var key = "___TOK_" + tokens.length + "___";
+    tokens.push(html);
+    return key;
+  }
+
+  // Protect strings first
+  var line = escaped.replace(/(&quot;(?:\\.|(?!&quot;).)*&quot;|&#39;(?:\\.|(?!&#39;).)*&#39;)/g, function (m) {
+    return storeToken("<span class=\"tok-str\">" + m + "</span>");
+  });
+
+  // Protect inline comments
+  var hashPos = line.indexOf("#");
+  if (hashPos !== -1) {
+    var comText = line.slice(hashPos);
+    line = line.slice(0, hashPos) + storeToken("<span class=\"tok-com\">" + comText + "</span>");
+  }
+
+  // Keywords
+  line = line.replace(/\b(import|from|as|def|return|if|elif|else|for|while|in|not|and|or|is|None|True|False|print|class|with|try|except)\b/g, "<span class=\"tok-kw\">$1</span>");
+
+  // Function calls
+  line = line.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)(?=\s*\()/g, "<span class=\"tok-fn\">$1</span>");
+
+  // Numbers
+  line = line.replace(/\b(\d+(?:\.\d+)?)\b/g, "<span class=\"tok-num\">$1</span>");
+
+  // Restore protected tokens
+  for (var i = 0; i < tokens.length; i++) {
+    line = line.replace("___TOK_" + i + "___", tokens[i]);
+  }
+
+  return line;
+}
+
+function getCategoryBadgeClass(category) {
+  if (category === "Data Visualization") return "badge-dv";
+  if (category === "Data Preprocessing") return "badge-dp";
+  if (category === "Machine Learning") return "badge-ml";
+  if (category === "Deep Learning") return "badge-dl";
+  if (category === "NLP") return "badge-nlp";
+  if (category === "CSV Datasets") return "badge-csv";
+  return "badge-cli";
+}
+
+function renderCategories() {
+  var bar = document.getElementById("category-bar");
+  var html = "";
+  for (var i = 0; i < CATEGORIES.length; i++) {
+    var cat = CATEGORIES[i];
+    var count = 0;
+    if (cat === "All") {
+      count = items.length;
+    } else {
+      for (var j = 0; j < items.length; j++) {
+        if (items[j].category === cat) {
+          count++;
+        }
+      }
+    }
+    var activeCls = activeCategory === cat ? " active" : "";
+    html += "<button type=\"button\" class=\"cat-pill" + activeCls + "\" onclick=\"selectCategory('" + escapeHtml(cat) + "')\">" + escapeHtml(cat) + " (" + count + ")</button>";
+  }
+  bar.innerHTML = html;
+}
+
+function buildCsvTableHtml(csvText) {
+  var lines = csvText.split(/\r?\n/).filter(function (l) {
+    return l.trim().length > 0;
+  });
+  if (lines.length === 0) {
+    return "<div style=\"padding:16px; color:var(--text-muted); font-size:0.82rem;\">Empty CSV dataset.</div>";
+  }
+  var headers = lines[0].split(",");
+  var html = "<div class=\"csv-table-wrap\"><table class=\"csv-data-table\"><thead><tr>";
+  for (var h = 0; h < headers.length; h++) {
+    html += "<th>" + escapeHtml(headers[h].trim()) + "</th>";
+  }
+  html += "</tr></thead><tbody>";
+  for (var r = 1; r < lines.length; r++) {
+    var cells = lines[r].split(",");
+    html += "<tr>";
+    for (var c = 0; c < headers.length; c++) {
+      var val = cells[c] !== undefined ? cells[c].trim() : "";
+      html += "<td>" + escapeHtml(val) + "</td>";
+    }
+    html += "</tr>";
+  }
+  html += "</tbody></table></div>";
+  return html;
+}
+
+function buildCodeBlockHtml(item) {
+  var lines = item.code.split("\n");
+  var isLong = lines.length > 18;
+  var isExpanded = !!expandedState[item.id];
+  var collapseCls = isLong && !isExpanded ? " collapsed" : "";
+
+  var html = "<div id=\"code-wrap-" + escapeHtml(item.id) + "\" class=\"code-wrapper" + collapseCls + "\">";
+  html += "<table class=\"code-table\"><tbody>";
+  for (var i = 0; i < lines.length; i++) {
+    html += "<tr>";
+    html += "<td class=\"line-num\">" + (i + 1) + "</td>";
+    html += "<td class=\"line-code\">" + highlightLine(lines[i], item.language) + "</td>";
+    html += "</tr>";
+  }
+  html += "</tbody></table></div>";
+  return html;
+}
+
+function renderCards() {
+  var list = document.getElementById("cards-list");
+  var emptyState = document.getElementById("empty-state");
+  var countPill = document.getElementById("count-pill");
+  var q = searchQuery.trim().toLowerCase();
+
+  var filtered = items.filter(function (item) {
+    var matchesCat = activeCategory === "All" || item.category === activeCategory;
+    if (!matchesCat) {
+      return false;
+    }
+    if (!q) {
+      return true;
+    }
+    return (
+      item.title.toLowerCase().indexOf(q) !== -1 ||
+      item.description.toLowerCase().indexOf(q) !== -1 ||
+      item.category.toLowerCase().indexOf(q) !== -1 ||
+      item.code.toLowerCase().indexOf(q) !== -1
+    );
+  });
+
+  countPill.textContent = "Showing " + filtered.length + " of " + items.length + " items";
+
+  if (filtered.length === 0) {
+    list.innerHTML = "";
+    emptyState.style.display = "block";
+    return;
+  }
+
+  emptyState.style.display = "none";
+  var html = "";
+
+  for (var i = 0; i < filtered.length; i++) {
+    var item = filtered[i];
+    var linesCount = item.code.split("\n").length;
+    var badgeCls = getCategoryBadgeClass(item.category);
+    var isCsv = item.type === "csv";
+    var unitLabel = isCsv ? (linesCount - 1) + " rows" : linesCount + " lines";
+
+    html += "<article class=\"card\">";
+    html += "<div class=\"card-header\">";
+    html += "<div class=\"card-meta\">";
+    html += "<div class=\"badges-row\">";
+    html += "<span class=\"badge " + badgeCls + "\">" + escapeHtml(item.category) + "</span>";
+    html += "<span class=\"badge badge-lines\">" + unitLabel + "</span>";
+    html += "</div>";
+    html += "<h2 class=\"card-title\">" + escapeHtml(item.title) + "</h2>";
+    html += "<p class=\"card-desc\">" + escapeHtml(item.description) + "</p>";
+    html += "</div>";
+
+    html += "<div class=\"card-actions\">";
+    if (isCsv) {
+      var showingRaw = !!csvRawState[item.id];
+      html += "<button type=\"button\" class=\"btn btn-secondary btn-sm\" onclick=\"toggleCsvView('" + escapeHtml(item.id) + "')\">" + (showingRaw ? "Table View" : "Raw CSV") + "</button>";
+      html += "<button type=\"button\" id=\"copy-btn-" + escapeHtml(item.id) + "\" class=\"btn btn-copy btn-sm\" onclick=\"copyItemCode('" + escapeHtml(item.id) + "')\">Copy CSV</button>";
+      html += "<button type=\"button\" class=\"btn btn-download btn-sm\" onclick=\"downloadCsvItem('" + escapeHtml(item.id) + "')\">Download .csv</button>";
+    } else {
+      if (linesCount > 18) {
+        var expanded = !!expandedState[item.id];
+        html += "<button type=\"button\" class=\"btn btn-secondary btn-sm\" onclick=\"toggleExpand('" + escapeHtml(item.id) + "')\">" + (expanded ? "Collapse" : "Expand (" + linesCount + "L)") + "</button>";
+      }
+      html += "<button type=\"button\" id=\"copy-btn-" + escapeHtml(item.id) + "\" class=\"btn btn-copy btn-sm\" onclick=\"copyItemCode('" + escapeHtml(item.id) + "')\">Copy Code</button>";
+    }
+    html += "</div>";
+    html += "</div>";
+
+    if (isCsv && !csvRawState[item.id]) {
+      html += buildCsvTableHtml(item.code);
+    } else {
+      html += buildCodeBlockHtml(item);
+    }
+
+    html += "</article>";
+  }
+
+  list.innerHTML = html;
+}
+
+function selectCategory(category) {
+  activeCategory = category;
+  renderCategories();
+  renderCards();
+}
+
+function handleSearch(val) {
+  searchQuery = val;
+  var clearBtn = document.getElementById("clear-search-btn");
+  clearBtn.style.display = val.length > 0 ? "block" : "none";
+  renderCards();
+}
+
+function clearSearch() {
+  var input = document.getElementById("search-input");
+  input.value = "";
+  handleSearch("");
+}
+
+function resetFilters() {
+  activeCategory = "All";
+  clearSearch();
+  renderCategories();
+  renderCards();
+}
+
+function toggleExpand(id) {
+  expandedState[id] = !expandedState[id];
+  renderCards();
+}
+
+function toggleCsvView(id) {
+  csvRawState[id] = !csvRawState[id];
+  renderCards();
+}
+
+function copyTextToClipboard(text, onSuccess) {
+  var textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.top = "-9999px";
+  textarea.style.left = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  try {
+    document.execCommand("copy");
+    if (onSuccess) onSuccess();
+  } catch (err) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        if (onSuccess) onSuccess();
+      });
+    }
+  }
+  document.body.removeChild(textarea);
+}
+
+function copyItemCode(id) {
+  var target = null;
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].id === id) {
+      target = items[i];
+      break;
+    }
+  }
+  if (!target) return;
+
+  copyTextToClipboard(target.code, function () {
+    var btn = document.getElementById("copy-btn-" + id);
+    if (btn) {
+      var originalLabel = target.type === "csv" ? "Copy CSV" : "Copy Code";
+      btn.classList.add("copied");
+      btn.textContent = "Copied!";
+      setTimeout(function () {
+        btn.classList.remove("copied");
+        btn.textContent = originalLabel;
+      }, 1800);
+    }
+    showToast("Copied \"" + target.title + "\" to clipboard!");
+  });
+}
+
+function downloadCsvItem(id) {
+  var target = null;
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].id === id) {
+      target = items[i];
+      break;
+    }
+  }
+  if (!target) return;
+
+  var filename = target.title.toLowerCase().endsWith(".csv") ? target.title : target.title + ".csv";
+  var blob = new Blob([target.code], { type: "text/csv;charset=utf-8;" });
+  var url = URL.createObjectURL(blob);
+  var link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  showToast("Downloading " + filename + "...");
+}
+
+// Modal Controls
+function openAddModal() {
+  switchAddType("code");
+  document.getElementById("input-title").value = "";
+  document.getElementById("input-desc").value = "";
+  document.getElementById("input-content").value = "";
+  document.getElementById("input-csv-file").value = "";
+  document.getElementById("add-error").style.display = "none";
+  document.getElementById("add-modal").classList.add("open");
+}
+
+function switchAddType(type) {
+  currentAddType = type;
+  var tabCode = document.getElementById("tab-code");
+  var tabCsv = document.getElementById("tab-csv");
+  var groupCat = document.getElementById("group-category");
+  var groupCsv = document.getElementById("group-csv-file");
+  var labelTitle = document.getElementById("label-title");
+  var inputTitle = document.getElementById("input-title");
+  var labelContent = document.getElementById("label-content");
+  var inputContent = document.getElementById("input-content");
+
+  if (type === "csv") {
+    tabCode.classList.remove("active");
+    tabCsv.classList.add("active");
+    groupCat.style.display = "none";
+    groupCsv.style.display = "flex";
+    labelTitle.textContent = "CSV Filename";
+    inputTitle.placeholder = "e.g., student_marks.csv";
+    labelContent.textContent = "CSV Data (Header + Rows)";
+    inputContent.placeholder = "Name,Age,Score\nAlice,21,92\nBob,22,87";
+  } else {
+    tabCsv.classList.remove("active");
+    tabCode.classList.add("active");
+    groupCat.style.display = "flex";
+    groupCsv.style.display = "none";
+    labelTitle.textContent = "Title";
+    inputTitle.placeholder = "e.g., Logistic Regression Classifier";
+    labelContent.textContent = "Code / Commands";
+    inputContent.placeholder = "Paste your Python code or CLI commands here...";
+  }
+}
+
+function handleCsvFileUpload(event) {
+  var file = event.target.files && event.target.files[0];
+  if (!file) return;
+  var titleInput = document.getElementById("input-title");
+  if (!titleInput.value.trim()) {
+    titleInput.value = file.name;
+  }
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    document.getElementById("input-content").value = e.target.result || "";
+  };
+  reader.readAsText(file);
+}
+
+function saveNewItem() {
+  var title = document.getElementById("input-title").value.trim();
+  var desc = document.getElementById("input-desc").value.trim();
+  var content = document.getElementById("input-content").value.trim();
+  var errBox = document.getElementById("add-error");
+
+  if (!title || !content) {
+    errBox.textContent = "Please enter both a Title and Code / CSV content.";
+    errBox.style.display = "block";
+    return;
+  }
+
+  var category = currentAddType === "csv" ? "CSV Datasets" : document.getElementById("input-category").value;
+  var lang = currentAddType === "csv" ? "csv" : (category === "Git & Docker" ? "bash" : "python");
+  var itemType = currentAddType === "csv" ? "csv" : (category === "Git & Docker" ? "command" : "code");
+
+  var newItem = {
+    id: "custom-" + Date.now(),
+    type: itemType,
+    language: lang,
+    title: title,
+    category: category,
+    description: desc || (currentAddType === "csv" ? "Custom uploaded CSV dataset." : "Custom added snippet."),
+    code: content
+  };
+
+  items.unshift(newItem);
+  saveItems();
+  activeCategory = "All";
+  renderCategories();
+  renderCards();
+  closeModal("add-modal");
+  showToast("Added \"" + title + "\"!");
+}
+
+function openExportModal() {
+  document.getElementById("export-json-area").value = JSON.stringify(items, null, 2);
+  document.getElementById("export-modal").classList.add("open");
+}
+
+function copyExportJson() {
+  var jsonStr = document.getElementById("export-json-area").value;
+  copyTextToClipboard(jsonStr, function () {
+    showToast("Export JSON copied to clipboard!");
+  });
+}
+
+function downloadExportJson() {
+  var jsonStr = document.getElementById("export-json-area").value;
+  var blob = new Blob([jsonStr], { type: "application/json;charset=utf-8;" });
+  var url = URL.createObjectURL(blob);
+  var link = document.createElement("a");
+  link.href = url;
+  link.download = "codevault-backup.json";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  showToast("Downloaded codevault-backup.json");
+}
+
+function restoreDefaults() {
+  items = DEFAULT_SNIPPETS.slice();
+  expandedState = {};
+  csvRawState = {};
+  activeCategory = "All";
+  saveItems();
+  renderCategories();
+  renderCards();
+  closeModal("export-modal");
+  showToast("Restored all 33 default items!");
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove("open");
+}
+
+function closeModalOnBackdrop(event, modalId) {
+  if (event.target.id === modalId) {
+    closeModal(modalId);
+  }
+}
+
+var toastTimer = null;
+function showToast(msg) {
+  var toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.classList.add("show");
+  if (toastTimer) {
+    clearTimeout(toastTimer);
+  }
+  toastTimer = setTimeout(function () {
+    toast.classList.remove("show");
+  }, 2400);
+}
+
+// Initialize App Immediately
+loadItems();
+renderCategories();
+renderCards();
+</script>
+</body>
+</html>
